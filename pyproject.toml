@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "eig_tristan"
+version = "0.1.0"
+description = "Application web pour l'EIG Tristan"
+authors = ["Ryan LAHFA <ryan.lahfa@justice.gouv.fr>"]
+license = "prietary"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^3.2.7"
+django-webpack-loader = "^1.3.0"
+djangorestframework = "^3.12.4"
+django-haystack = "^3.1.1"
+PyPDF2 = "^1.26.0"
+textract = "^1.6.4"
+
+[tool.poetry.dev-dependencies]
+django-debug-toolbar = "^3.2.2"
+django-extensions = "^3.1.3"
+Werkzeug = "^2.0.1"
+ipython = "^7.27.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
