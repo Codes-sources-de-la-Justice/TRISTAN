@@ -1,0 +1,5 @@
+root = true
+
+[*.{js,jsx}]
+indent_style = spaces
+indent_size = 2
