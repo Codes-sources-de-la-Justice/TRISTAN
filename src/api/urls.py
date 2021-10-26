@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from api import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/analyze', views.analyze),
+    path('api/v1/analysis/<uuid:case_id>', views.analysis_results)
 ]

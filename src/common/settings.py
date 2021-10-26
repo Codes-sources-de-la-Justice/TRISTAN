@@ -37,7 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'djangorestframework',
+    'rest_framework',
+]
+if DEBUG:
+    INSTALLED_APPS += ['corsheaders']
+    CORS_ORIGIN_WHITELIST = (
+        'http://localhost:3000',
+    ) # React.js development
+
+INSTALLED_APPS += ['api',
     # 'django-webpack-loader',
     # 'django-haystack'
 ]
@@ -51,6 +59,7 @@ if DEBUG:
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -135,3 +144,13 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Celery configuration
+CELERY_TIMEZONE = "Europe/Paris"
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+# SPS configuration
+SPS_API_URL_BASE = "http://localhost:3001"

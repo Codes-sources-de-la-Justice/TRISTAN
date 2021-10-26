@@ -12,7 +12,13 @@ django-webpack-loader = "^1.3.0"
 djangorestframework = "^3.12.4"
 django-haystack = "^3.1.1"
 PyPDF2 = "^1.26.0"
-textract = "^1.6.4"
+# textract = "^1.6.4"
+# pdf2dataset = "^0.5.3"
+pdftotext = "^2.2.1"
+celery = {extras = ["redis"], version = "^5.1.2"}
+xmltodict = "^0.12.0"
+django-cors-headers = "^3.10.0"
+flair = "^0.9"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2.2"
