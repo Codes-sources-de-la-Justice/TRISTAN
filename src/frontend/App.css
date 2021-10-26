@@ -2,6 +2,19 @@
   text-align: center;
 }
 
+.Affaires {
+  display: flex;
+  flex-flow: column;
+}
+
+.Affaires hr {
+  margin: 0;
+}
+
+.Affaire {
+  margin: 5px auto;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

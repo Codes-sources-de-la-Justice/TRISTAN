@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Circle, Arrow, Group, Text, Path } from "react-konva";
+import { Circle, Arrow, Group, Text, Path, Rect } from "react-konva";
 import dagre from "dagre";
 
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
@@ -9,7 +9,7 @@ const unk_icon = faQuestion; // question
 function FontAwesomeIcon({ icon, ...props }) {
   const [width, height, _, __, pathData] = icon.icon;
   return (
-    <Path data={pathData} scaleX={0.05} scaleY={0.05} fill="black" {...props} />
+    <Path data={pathData} scaleX={0.05} scaleY={0.05} fill="blue" {...props} />
   );
 }
 
@@ -18,15 +18,16 @@ function renderIcon(node) {
 
   return (
     <>
-      <Circle width={width} height={height} stroke="red" />
-      {<FontAwesomeIcon icon={icon || unk_icon} />}
+			<Rect width={width} height={height} stroke='black' />
+			{/* <Circle width={width} height={height} stroke="red" /> */}
+      <FontAwesomeIcon icon={icon || unk_icon} x={width / 2} />
       {label && (
         <Text
+					offsetY={-30}
           text={label}
           width={width}
           height={height}
-          align="center"
-          verticalAlign="center"
+					align='center'
         />
       )}
     </>
@@ -34,17 +35,17 @@ function renderIcon(node) {
 }
 
 function GraphNode({ node, ...props }) {
-  const { type, x, y } = node;
+  const { type, x, y, width, height } = node;
 
   return (
-    <Group x={x} y={y}>
+    <Group x={x - (width/2)} y={y - (height/2)}>
       {renderIcon(node)}
     </Group>
   );
 }
 
 function GraphEdge({ edge, ...props }) {
-  const { points } = edge;
+  const { points, x, y } = edge;
 
   if (!points) return null;
 

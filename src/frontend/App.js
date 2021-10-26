@@ -1,138 +1,175 @@
 import "./App.css";
-import Logos from "./logos";
+import { getAffaires, getAffaire, getLatestAnalysis, requestAnalysis } from "./API.js"
 
-import React from "react";
-import { Stage, Layer, Line, Image as KonvaImage } from "react-konva";
-import useImage from "use-image";
+import React, { useState, useEffect, Fragment } from "react";
+import { Link, Route } from "wouter";
 
-import Graph from "./components/Graph";
-import dagre from "dagre";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
+import { HeaderNav, NavItem } from "@dataesr/react-dsfr"
 
-import {
-  faEdit,
-  faClock,
-  faMap,
-  faBookOpen,
-} from "@fortawesome/free-solid-svg-icons";
 
-function Logo({ logo, ...props }) {
-  const [image] = useImage(Logos[logo]);
-  return <KonvaImage image={image} width={100} height={100} {...props} />;
+import PSPDFKit from "./components/PSPDFKit.js";
+
+import "leaflet/dist/leaflet.css";
+import L from 'leaflet'
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+	iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
+	iconUrl: require('leaflet/dist/images/marker-icon.png').default,
+	shadowUrl: require('leaflet/dist/images/marker-shadow.png').default
+});
+
+const baseUrl = `${window.location.protocol}//${window.location.host}/${process.env.PUBLIC_URL}`;
+
+const franceCenter = [ 46.7111, 1.7191 ];
+
+const getCentroid = arr => arr.reduce((x, y) => [x[0] + y[0]/arr.length, x[1] + y[1]/arr.length], [0, 0]);
+
+function ChangeView({center, zoom}) {
+	const map = useMap()
+	map.setView(center, zoom)
+	return null
 }
 
-const g = new dagre.graphlib.Graph();
+function Map({id}) {
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const [currentOpenedSource, setSource] = useState(null);
 
-g.setGraph({});
-g.setDefaultEdgeLabel(() => ({}));
+	useEffect(() => {
+		if (!loading) {
+			setLoading(true)
+			getLatestAnalysis(id).then(setData);
+		}
+	}, [loading, id]);
 
-const parameters = {
-  icon: {
-    width: 144,
-    height: 100,
-  },
-  date: {
-    icon: faClock, // clock
-    width: 144,
-    height: 100,
-    type: "icon",
-  },
-  place: {
-    icon: faMap, // map
-    width: 144,
-    height: 100,
-    type: "icon",
-  },
-  pv_audition: {
-    icon: faBookOpen, // book_open
-    width: 200,
-    height: 200,
-    type: "icon",
-  },
-  person: {
-    width: 200,
-    height: 200,
-    type: "icon",
-  },
-};
+	const positions = data?.filter(a => a.payload.type === "map").flatMap(({payload}) => payload.facts.map(fact => [parseFloat(fact.y), parseFloat(fact.x)]));
 
-function expandNodeValue(val) {
-  return { ...val, ...parameters[val.type] };
+	console.log(positions)
+	const center = getCentroid(positions ?? [franceCenter])
+	const zoom = 13
+
+	return (
+		<>
+			{!!currentOpenedSource && <PSPDFKit documentUrl={`http://localhost:3001/${currentOpenedSource}`} baseUrl={baseUrl} onClose={() => setSource(null)} />}
+			{!currentOpenedSource && (<MapContainer center={center} zoom={zoom} scrollWheelZoom={false} style={{width: "100%", height: "100vh"}}>
+				<ChangeView center={center} zoom={zoom} />
+				<TileLayer
+					attribution='&copy; Contributeurs <a href="https://osm.org/copyright">OpenStreetMap</a>'
+					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+				/>
+				{data?.filter(analysis => analysis.payload.type === "map").flatMap(({payload}) => payload.facts.map(fact => (
+							<Marker key={`${fact.y}-${fact.x}-${fact.label}`} position={[fact.y, fact.x]}>
+								<Popup>
+									Fait de {fact.label} rapporté à {fact.started_at_utc} (NATINF: {fact.natinf})
+									<button onClick={() => setSource(fact.source)}>Ouvrir la source</button>
+								</Popup>
+							</Marker>
+						))
+				)}
+			</MapContainer>)}
+		</>
+	);
 }
-function setNode(key, value) {
-  return g.setNode(key, expandNodeValue(value));
+
+function Affaire({id}) {
+	const [data, setData] = useState(null);
+	const [selectedPath, setSelection] = useState(null);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		if (!loading) {
+			setLoading(true);
+			getAffaire(id).then(setData);
+			requestAnalysis(id).then(ticket => {
+				console.log('analyze requested', ticket)
+			})
+		}
+	}, [loading, id]);
+
+	return (
+		<main className="App">
+			<h1>Affaire {id}</h1>
+			<h2>Pièces disponibles</h2>
+			<ul>
+				{data?.map(piece => (
+					<li key={piece.path}>
+						<button onClick={() => setSelection(piece.path)}>
+							{piece.path}
+						</button>
+					</li>
+				))}
+			</ul>
+			<h2>Visualisations disponibles</h2>
+			<ul>
+				<li>Schéma pitch initial</li>
+				<li>
+					<Link href={`/affaires/${id}/viz/map`}>
+						<a href="replace">Carte des faits</a>
+					</Link>
+				</li>
+			</ul>
+			{selectedPath && <PSPDFKit documentUrl={`http://localhost:3001/${selectedPath}`} baseUrl={baseUrl} />}
+		</main>
+	);
 }
 
-setNode("date_evt", { label: "27/10/2020 à 10 h 47", type: "date" });
-setNode("nature_evt", { label: "Vol", type: "icon", icon: faEdit });
-setNode("where_evt", { label: "Clamart", type: "place" });
-setNode("nature_where_evt", {
-  label: "Commerce de vins et spiritueux",
-  type: "place",
-});
-setNode("pv_audition_1", { type: "pv_audition" });
-setNode("date_pv_audition_1", {
-  label: "mardi 27 octobre 2020 10 heures 45 minutes",
-  type: "date",
-});
-setNode("pv_audition_2", { type: "pv_audition" });
-setNode("date_pv_audition_2", {
-  label: "mardi 27 octobre 2020 16 heures 00 minutes",
-  type: "date",
-});
-setNode("victim_1", {
-  type: "person",
-  label: "VICTIME Louise",
-  image: "something",
-});
-setNode("tag_1", { type: "icon", label: "Victime" });
+function AffaireItem({id, title}) {
+	// on click, go load the affaire.
+	return (
+		<section className="Affaire">
+			<h3>
+				<Link href={`/affaires/${id}`}>
+					<a href="replace">Affaire {title}</a>
+				</Link>
+			</h3>
+		</section>
+	);
+}
 
-g.setEdge("date_evt", "nature_evt");
-g.setEdge("nature_evt", "where_evt");
-g.setEdge("where_evt", "nature_where_evt");
-g.setEdge("date_pv_audition_1", "pv_audition_1");
-g.setEdge("nature_evt", "pv_audition_2");
-g.setEdge("date_pv_audition_2", "pv_audition_2");
-g.setEdge("pv_audition_2", "victim_1");
-g.setEdge("victim_1", "tag_1");
-
-/*// DEMO rapide
-// Add nodes to the graph. The first argument is the node id. The second is
-// metadata about the node. In this case we're going to add labels to each of
-// our nodes.
-g.setNode("kspacey",    { label: "Kevin Spacey",  width: 144, height: 100 });
-g.setNode("swilliams",  { label: "Saul Williams", width: 160, height: 100 });
-g.setNode("bpitt",      { label: "Brad Pitt",     width: 108, height: 100 });
-g.setNode("hford",      { label: "Harrison Ford", width: 168, height: 100 });
-g.setNode("lwilson",    { label: "Luke Wilson",   width: 144, height: 100 });
-g.setNode("kbacon",     { label: "Kevin Bacon",   width: 121, height: 100 });
-
-// Add edges to the graph.
-g.setEdge("kspacey",   "swilliams");
-g.setEdge("swilliams", "kbacon");
-g.setEdge("bpitt",     "kbacon");
-g.setEdge("hford",     "lwilson");
-g.setEdge("lwilson",   "kbacon");
-//g.setEdge("kspacey", "hford");
-//*/
-
-function App() {
-  // Stage is a div container
-  // Layer is actual canvas element (so you may have several canvases in the stage)
-  // And then we have canvas shapes inside the Layer
+function Home() {
+	const [affaires, setAffaires] = useState([]);
+	const [loading, setLoading] = useState(false);
+	useEffect(() => {
+		if (!loading) {
+			setLoading(true);
+			getAffaires()
+				.then(setAffaires);
+		}
+	}, [loading]);
   return (
-    <Stage
-      width={window.innerWidth}
-      height={window.innerHeight}
-      scaleX={0.8}
-      scaleY={0.8}
-    >
-      <Layer>
-        <Logo logo="GN" y={150} width={150} />
-        <Logo logo="Douane" y={270} width={116} />
-        <Logo logo="MJ" y={400} width={123} />
-        <Graph.Graph graph={g} x={150} y={100} />
-      </Layer>
-    </Stage>
+		<main>
+			<h1 className="App">TRISTAN</h1>
+			<h2 className="App">Liste des affaires</h2>
+			<section className="Affaires">
+				{affaires.map(affaire => (<Fragment key={affaire.id}><AffaireItem  {...affaire} /><hr/></Fragment>))}
+			</section>
+		</main>
   );
 }
+
+function App() {
+	return (
+		<>
+			<HeaderNav>
+				<NavItem title="Liste des affaires"
+					asLink={<Link href="/" />} />
+			</HeaderNav>
+
+			<Route path="/">
+				<Home />
+			</Route>
+
+			<Route path="/affaires/:id">
+				{params => <Affaire id={params.id} />}
+			</Route>
+
+			<Route path="/affaires/:id/viz/map">
+				{params => <Map id={params.id} />}
+			</Route>
+		</>
+	);
+}
+
 export default App;
