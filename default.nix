@@ -3,6 +3,9 @@ let
   env = pkgs.poetry2nix.mkPoetryEnv {
     projectDir = ./.;
     overrides = pkgs.poetry2nix.overrides.withDefaults (self: super: {
+      tokenizers = (super.tokenizers.overridePythonAttrs (old: {
+        nativeBuildInputs = (old.nativeBuildInputs or [] ) ++ [ self.setuptools-rust ];
+      })).override { preferWheel = true; };
       pdftotext = super.pdftotext.overridePythonAttrs (old: {
         buildInputs = (old.buildInputs or []) ++ (with pkgs; [ pkg-config poppler ]);
       });
@@ -27,6 +30,7 @@ in {
   shell = with pkgs;
     mkShell {
       buildInputs = [ env yarn2nix yarn nodejs yq nodePackages.json-server ];
+      PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium.outPath}/bin/chromium";
       DJANGO_SETTINGS_MODULE = "common.settings";
       # node_modules = "${jsDeps}/node_modules";
       CACHE_DIR = "/var/cache/";
