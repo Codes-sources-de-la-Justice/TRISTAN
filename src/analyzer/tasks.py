@@ -2,6 +2,7 @@ from celery import shared_task, group, chord
 from api.models import AnalysisTicket, AnalysisResult
 import analyzer.sps as sps
 import analyzer.utils as utils
+import analyzer.timeline as timeline
 import io
 
 def initiate_worktree(ticket):
@@ -71,6 +72,22 @@ def extract_facts_map(ticket_id, toc):
                                   )
 
 @shared_task
+def extract_facts_timeline(ticket_id, toc):
+    ticket = AnalysisTicket.objects.get(id=ticket_id)
+    ctx = timeline.GraphContext()
+    # construire une ligne de temps des faits:
+    # 1. commencer une analyse globale:
+    # TODO: comment faire de l'enrichissement de données de façon intelligente?
+    for item in filter(lambda i: i['path'].endswith('pdf'), toc):
+        piece = fetch_piece(ticket, item)
+        ctx.ingest(piece) # l'ingestion exécute 1 et 2 de façon incrémentale.
+    # 3. créer le graphe et pousser le résultat d'analyse.
+    AnalysisResult.objects.create(
+        parent_ticket=ticket,
+        payload={'type': 'timeline', 'graph': ctx.create_graph()}
+    )
+
+@shared_task
 def end_analyze(result, ticket_id):
     AnalysisTicket.objects.filter(pk=ticket_id).update(status=AnalysisTicket.DONE)
 
@@ -94,7 +111,13 @@ def start_analyze(ticket_id):
 
         print(toc)
         # registered analyzers
-        (group([extract_facts_map.s(ticket_id, toc)]) | end_analyze.s(ticket_id)).on_error(cleanup_analyzes.s([ticket_id])).delay()
+        registered_analysers = list(map(lambda f: f.s(ticket_id, toc), [
+            extract_facts_map,
+            extract_facts_timeline
+        ]))
+        # TODO: parallelize analyzers and chain to end_analyze.
+
+        (group(registered_analysers) | end_analyze.s(ticket_id)).on_error(cleanup_analyzes.s([ticket_id])).delay()
     except Exception as e:
         print('error', e)
         ticket.status = ticket.ERROR
