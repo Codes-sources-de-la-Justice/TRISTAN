@@ -49,3 +49,7 @@
     transform: rotate(360deg);
   }
 }
+
+.App ul {
+  list-style: none;
+}

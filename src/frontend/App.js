@@ -7,6 +7,11 @@ import { Link, Route } from "wouter";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import { HeaderNav, NavItem } from "@dataesr/react-dsfr"
 
+import Joyride from "react-joyride"
+
+import Schema from "./containers/Schema.js";
+import ExampleGraph from "./components/ExampleGraph.js";
+import { fromRawTimeline } from "./utils/Layout.js";
 
 import PSPDFKit from "./components/PSPDFKit.js";
 
@@ -30,6 +35,30 @@ function ChangeView({center, zoom}) {
 	const map = useMap()
 	map.setView(center, zoom)
 	return null
+}
+
+function Timeline({id}) {
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(false);
+	
+	useEffect(() => {
+		if (!loading) {
+			setLoading(true)
+			getLatestAnalysis(id).then(setData);
+		}
+	}, [loading, id]);
+
+	const timelines = data?.filter(p => p.payload.type === "timeline")
+
+	if (!timelines || timelines.length === 0) {
+		return null
+	}
+
+	const timeline = fromRawTimeline(timelines[0].payload.graph)
+
+	return (
+		<Schema graph={timeline} />
+	);
 }
 
 function Map({id}) {
@@ -73,8 +102,32 @@ function Map({id}) {
 	);
 }
 
+const affaireSteps = [
+	{
+		target: '.App h1',
+		content: "Bienvenue dans la dashboard de votre première affaire, ceci est votre centre de contrôle personnel!"
+	},
+	{
+		target: '.liste-pieces',
+		content: "Ceci est la liste des pièces disponibles dans cette affaire"
+	},
+	{
+		target: '.liste-pieces li:first-child',
+		content: "Vous pouvez cliquer sur l'une d'entre elle pour l'afficher!"
+	},
+	{
+		target: '.visualisations',
+		content: "Voici les visualisations que TRISTAN vous met à disposition automatiquement"
+	},
+	{
+		target: '.visualisations li:first-child',
+		content: "Par exemple, vous pouvez cliquer sur celle-ci !"
+	}
+];
+
 function Affaire({id}) {
 	const [data, setData] = useState(null);
+	const [currentPayloads, setCurrentPayloads] = useState(null);
 	const [selectedPath, setSelection] = useState(null);
 	const [loading, setLoading] = useState(false);
 
@@ -85,14 +138,21 @@ function Affaire({id}) {
 			requestAnalysis(id).then(ticket => {
 				console.log('analyze requested', ticket)
 			})
+			getLatestAnalysis(id).then(payloads => {
+				console.log('latest analysis available', payloads)
+				setCurrentPayloads(payloads)
+			});
 		}
 	}, [loading, id]);
 
+	const isAnalysisAvailable = type => currentPayloads?.filter(p => p.type === type).length >= 1
+
 	return (
 		<main className="App">
-			<h1>Affaire {id}</h1>
+			<Joyride steps={affaireSteps} continuous={true} showSkipButton={true} />
+			<h1 className="dashboard-title">Affaire {id} - Dashboard</h1>
 			<h2>Pièces disponibles</h2>
-			<ul>
+			<ul className="liste-pieces">
 				{data?.map(piece => (
 					<li key={piece.path}>
 						<button onClick={() => setSelection(piece.path)}>
@@ -102,11 +162,15 @@ function Affaire({id}) {
 				))}
 			</ul>
 			<h2>Visualisations disponibles</h2>
-			<ul>
-				<li>Schéma pitch initial</li>
+			<ul className="visualisations">
+				<li>
+					<Link href={`/affaires/${id}/viz/timeline`}>
+						<a href="replace" disabled={isAnalysisAvailable("timeline")}>Schéma pitch initial</a>
+					</Link>
+				</li>
 				<li>
 					<Link href={`/affaires/${id}/viz/map`}>
-						<a href="replace">Carte des faits</a>
+						<a href="replace" disabled={isAnalysisAvailable("map")}>Carte des faits</a>
 					</Link>
 				</li>
 			</ul>
@@ -167,6 +231,14 @@ function App() {
 
 			<Route path="/affaires/:id/viz/map">
 				{params => <Map id={params.id} />}
+			</Route>
+
+			<Route path="/affaires/:id/viz/timeline">
+				{params => <Timeline id={params.id} />}
+			</Route>
+
+			<Route path="/demo/schema">
+				<Schema graph={ExampleGraph} />
 			</Route>
 		</>
 	);
