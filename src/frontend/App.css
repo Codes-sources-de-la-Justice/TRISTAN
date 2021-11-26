@@ -41,6 +41,18 @@
   color: #61dafb;
 }
 
+.App-dual-workflow {
+  display: flex;
+}
+
+.liste-pieces-container {
+  max-width: 300px;
+}
+
+.rstm-tree-item {
+  overflow-wrap: break-word;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

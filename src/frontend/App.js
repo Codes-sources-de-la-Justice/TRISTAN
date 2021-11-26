@@ -8,6 +8,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import { HeaderNav, NavItem } from "@dataesr/react-dsfr"
 
 import Joyride from "react-joyride"
+import TreeMenu from "react-simple-tree-menu"
 
 import Schema from "./containers/Schema.js";
 import ExampleGraph from "./components/ExampleGraph.js";
@@ -15,6 +16,7 @@ import { fromRawTimeline } from "./utils/Layout.js";
 
 import PSPDFKit from "./components/PSPDFKit.js";
 
+import '../../node_modules/react-simple-tree-menu/dist/main.css';
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet'
 
@@ -35,6 +37,30 @@ function ChangeView({center, zoom}) {
 	const map = useMap()
 	map.setView(center, zoom)
 	return null
+}
+
+function createDeepObject(tree, path) {
+	const s = path.split('/')
+
+	let subobj = tree
+
+	s.forEach(p => {
+		subobj[p] = Object.assign({
+			label: p,
+			nodes: {},
+		}, subobj[p] || {});
+		subobj = subobj[p].nodes
+	})
+
+	return tree
+}
+
+function buildFilesystemTree(data) {
+	let tree = {}
+	data?.forEach(piece => {
+		tree = createDeepObject(tree, piece.path)
+	});
+	return tree
 }
 
 function Timeline({id}) {
@@ -89,7 +115,7 @@ function Map({id}) {
 					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 				/>
 				{data?.filter(analysis => analysis.payload.type === "map").flatMap(({payload}) => payload.facts.map(fact => (
-							<Marker key={`${fact.y}-${fact.x}-${fact.label}`} position={[fact.y, fact.x]}>
+							<Marker key={`${fact.y}-${fact.x}-${fact.natinf}`} position={[fact.y, fact.x]}>
 								<Popup>
 									Fait de {fact.label} rapporté à {fact.started_at_utc} (NATINF: {fact.natinf})
 									<button onClick={() => setSource(fact.source)}>Ouvrir la source</button>
@@ -147,34 +173,37 @@ function Affaire({id}) {
 
 	const isAnalysisAvailable = type => currentPayloads?.filter(p => p.type === type).length >= 1
 
+	const hierarchyTree = data ? buildFilesystemTree(data) : [];
+
 	return (
 		<main className="App">
 			<Joyride steps={affaireSteps} continuous={true} showSkipButton={true} />
-			<h1 className="dashboard-title">Affaire {id} - Dashboard</h1>
-			<h2>Pièces disponibles</h2>
-			<ul className="liste-pieces">
-				{data?.map(piece => (
-					<li key={piece.path}>
-						<button onClick={() => setSelection(piece.path)}>
-							{piece.path}
-						</button>
-					</li>
-				))}
-			</ul>
-			<h2>Visualisations disponibles</h2>
-			<ul className="visualisations">
-				<li>
-					<Link href={`/affaires/${id}/viz/timeline`}>
-						<a href="replace" disabled={isAnalysisAvailable("timeline")}>Schéma pitch initial</a>
-					</Link>
-				</li>
-				<li>
-					<Link href={`/affaires/${id}/viz/map`}>
-						<a href="replace" disabled={isAnalysisAvailable("map")}>Carte des faits</a>
-					</Link>
-				</li>
-			</ul>
-			{selectedPath && <PSPDFKit documentUrl={`http://localhost:3001/${selectedPath}`} baseUrl={baseUrl} />}
+			<section className="App-dual-workflow">
+				<section className="liste-pieces-container">
+					<ul className="liste-pieces">
+						<TreeMenu data={hierarchyTree} onClickItem={({key, label, ...props}) => {
+							if (!props.hasNodes) setSelection(key)
+						}}/>
+					</ul>
+				</section>
+				<section>
+					<h1 className="dashboard-title">Affaire {id} - Dashboard</h1>
+					<h2>Visualisations disponibles</h2>
+					<ul className="visualisations">
+						<li>
+							<Link href={`/affaires/${id}/viz/timeline`}>
+								<a href="replace" disabled={isAnalysisAvailable("timeline")}>Schéma pitch initial</a>
+							</Link>
+						</li>
+						<li>
+							<Link href={`/affaires/${id}/viz/map`}>
+								<a href="replace" disabled={isAnalysisAvailable("map")}>Carte des faits</a>
+							</Link>
+						</li>
+					</ul>
+					{selectedPath && <PSPDFKit documentUrl={`http://localhost:3001/${selectedPath}`} baseUrl={baseUrl} />}
+				</section>
+			</section>
 		</main>
 	);
 }
