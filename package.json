@@ -24,6 +24,7 @@
     "react-konva": "^17.0.2-5",
     "react-leaflet": "^3.2.2",
     "react-scripts": "^4.0.3",
+    "react-simple-tree-menu": "^1.1.18",
     "use-image": "^1.0.8",
     "web-vitals": "^1.0.1",
     "workbox-core": "^6.3.0",
