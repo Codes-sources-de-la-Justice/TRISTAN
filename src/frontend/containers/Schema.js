@@ -53,9 +53,6 @@ function Schema({graph}) {
 			y={stage.y}
     >
       <Layer>
-        <Logo logo="GN" y={150} width={150} />
-        <Logo logo="Douane" y={270} width={116} />
-        <Logo logo="MJ" y={400} width={123} />
         <Graph.Graph graph={graph} x={150} y={100} />
       </Layer>
     </Stage>
