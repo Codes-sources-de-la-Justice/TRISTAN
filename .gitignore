@@ -4,3 +4,6 @@ node_modules/
 **/*.swp
 .direnv/
 build/
+contrib/sps-mock/*.json
+contrib/sps-mock/public
+**/*.tar.gz
