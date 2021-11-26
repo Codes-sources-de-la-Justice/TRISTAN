@@ -23,16 +23,17 @@ def build_affaires(folder):
             names = set(dirs)
             break
 
-    for root, files in read_fs_tree(folder):
-        name = os.path.basename(root)
-        if name in names:
+    for n in names:
+        for root, files in read_fs_tree(os.path.join(folder, n)):
             for file in files:
-                if 'pieces' not in affaires[name]:
-                    affaires[name]['pieces'] = []
+                if os.path.isdir(file):
+                    continue
+                if 'pieces' not in affaires[n]:
+                    affaires[n]['pieces'] = []
 
                 rel_dir = os.path.relpath(root, folder)
                 rel_file = os.path.join(rel_dir, file)
-                affaires[name]['pieces'].append({'path': rel_file})
+                affaires[n]['pieces'].append({'path': rel_file})
 
     return affaires
 
