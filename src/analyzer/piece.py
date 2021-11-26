@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Optional, List, Tuple, Callable
 import re
 
-class PieceNature(enum.Enum):
+class PieceNature(str, enum.Enum):
     PV_SYNTHESE = "PROCES-VERBAL_DE_SYNTHESE"
     PV_CLOTURE = "02_-_PV_ENQUETE_CLOTURE" # TODO: ???
     BORDEREAU_ENVOI_JUDICIAIRE = "BORDEREAU_D'ENVOI_JUDICIAIRE"

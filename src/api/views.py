@@ -34,7 +34,10 @@ def analyze(request):
 
 @api_view(['GET'])
 def analysis_results(request, case_id):
-    ticket = AnalysisTicket.objects.filter(case_id=case_id, status=AnalysisTicket.DONE).latest('updated_at')
-    # TODO: pagination
-    serializer = AnalysisResultSerializer(ticket.results, many=True)
-    return Response(serializer.data)
+    try:
+        ticket = AnalysisTicket.objects.filter(case_id=case_id, status=AnalysisTicket.DONE).latest('updated_at')
+        # TODO: pagination
+        serializer = AnalysisResultSerializer(ticket.results, many=True)
+        return Response(serializer.data)
+    except AnalysisTicket.DoesNotExist:
+        raise Http404

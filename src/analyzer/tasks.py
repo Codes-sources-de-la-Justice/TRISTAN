@@ -39,6 +39,19 @@ def fetch_piece(ticket, item):
 
     return {"data": xml_data, "text": text_data, "images": [], 'source': path}
 
+def mk_fact_for_map(fact, already_seen, payload, extra):
+    # Non-exploitable data.
+    if any(critical_key not in fact for critical_key in ('Fait_GpsX', 'Fait_GpsY', 'Natinf')):
+        return
+
+    key = f"{fact['Fait_GpsX']}|{fact['Fait_GpsY']}|{fact['Natinf']}"
+    if key in already_seen:
+        return
+
+    payload['facts'].append({'x': fact['Fait_GpsX'], 'y': fact['Fait_GpsY'], 'label': fact.get('Libelle_Fait', 'pas de libellé'), 'natinf': fact['Natinf'], 'started_at_utc': fact['Periode_Affaire_Debut']['@utc']} | extra)
+    already_seen.add(key)
+
+
 def mk_facts_map(pieces):
     payload = {'type': 'map', 'facts': []}
     already_seen = set()
@@ -47,19 +60,14 @@ def mk_facts_map(pieces):
         if not piece['data']: # Useless data.
             continue
 
-        fact = piece['data'].get('Procedure', {}).get('Faits', {}).get('Fait', {})
-        # Non-exploitable data.
-        if any(critical_key not in fact for critical_key in ('Fait_GpsX', 'Fait_GpsY')):
-            continue
-
-        key = f"{fact['Fait_GpsX']}|{fact['Fait_GpsY']}|{fact['Libelle_Fait']}"
-        if key in already_seen:
-            continue
-
-        payload['facts'].append({'x': fact['Fait_GpsX'], 'y': fact['Fait_GpsY'], 'label': fact['Libelle_Fait'], 'natinf': fact['Natinf'], 'started_at_utc': fact['Periode_Affaire_Debut']['@utc'],
-                                 'source': piece['source']})
-        already_seen.add(key)
-
+        facts = piece['data'].get('Procedure', {}).get('Faits', {}).get('Fait', {})
+        extra = { 'source': piece['source'] }
+        if isinstance(facts, list):
+            for fact in facts:
+                mk_fact_for_map(fact, already_seen, payload, extra)
+        else:
+            mk_fact_for_map(facts, already_seen, payload, extra)
+        
     return payload
 
 @shared_task
