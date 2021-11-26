@@ -29,9 +29,10 @@ let
 in {
   shell = with pkgs;
     mkShell {
-      buildInputs = [ env yarn2nix yarn nodejs yq nodePackages.json-server ];
+      buildInputs = [ env yarn2nix yarn nodejs yq nodePackages.json-server foreman ];
       PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium.outPath}/bin/chromium";
       DJANGO_SETTINGS_MODULE = "common.settings";
+      DEBUG = "True";
       # node_modules = "${jsDeps}/node_modules";
       CACHE_DIR = "/var/cache/";
       /* shellHook = ''

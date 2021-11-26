@@ -46,7 +46,7 @@ python-versions = "*"
 
 [[package]]
 name = "celery"
-version = "5.2.0"
+version = "5.2.1"
 description = "Distributed Task Queue."
 category = "main"
 optional = false
@@ -58,9 +58,9 @@ click = ">=8.0,<9.0"
 click-didyoumean = ">=0.0.3"
 click-plugins = ">=1.1.1"
 click-repl = ">=0.2.0"
-kombu = ">=5.2.1,<6.0"
-pytz = ">0.0-dev"
-redis = {version = ">=3.2.0", optional = true, markers = "extra == \"redis\""}
+kombu = ">=5.2.2,<6.0"
+pytz = ">0.dev.0"
+redis = {version = ">=3.4.1,<4.0.0", optional = true, markers = "extra == \"redis\""}
 vine = ">=5.0.0,<6.0"
 
 [package.extras]
@@ -76,8 +76,8 @@ couchdb = ["pycouchdb"]
 django = ["Django (>=1.11)"]
 dynamodb = ["boto3 (>=1.9.178)"]
 elasticsearch = ["elasticsearch"]
-eventlet = ["eventlet (>=0.26.1)"]
-gevent = ["gevent (>=1.0.0)"]
+eventlet = ["eventlet (>=0.32.0)"]
+gevent = ["gevent (>=1.5.0)"]
 librabbitmq = ["librabbitmq (>=1.5.0)"]
 memcache = ["pylibmc"]
 mongodb = ["pymongo[srv] (>=3.3.0,<3.12.1)"]
@@ -85,7 +85,7 @@ msgpack = ["msgpack"]
 pymemcache = ["python-memcached"]
 pyro = ["pyro4"]
 pytest = ["pytest-celery"]
-redis = ["redis (>=3.2.0)"]
+redis = ["redis (>=3.4.1,<4.0.0)"]
 s3 = ["boto3 (>=1.9.125)"]
 slmq = ["softlayer-messaging (>=1.0.3)"]
 solar = ["ephem"]
@@ -163,7 +163,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "django"
-version = "3.2.8"
+version = "3.2.9"
 description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
@@ -202,8 +202,21 @@ Django = ">=2.2"
 sqlparse = ">=0.2.0"
 
 [[package]]
+name = "django-environ"
+version = "0.8.1"
+description = "A package that allows you to utilize 12factor inspired environment variables to configure your Django application."
+category = "main"
+optional = false
+python-versions = ">=3.4,<4"
+
+[package.extras]
+develop = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)", "furo (>=2021.8.17b43,<2021.9.0)", "sphinx (>=3.5.0)", "sphinx-notfound-page"]
+docs = ["furo (>=2021.8.17b43,<2021.9.0)", "sphinx (>=3.5.0)", "sphinx-notfound-page"]
+testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
+
+[[package]]
 name = "django-extensions"
-version = "3.1.3"
+version = "3.1.5"
 description = "Extensions for Django"
 category = "dev"
 optional = false
@@ -247,7 +260,7 @@ django = ">=2.2"
 
 [[package]]
 name = "ipython"
-version = "7.28.0"
+version = "7.29.0"
 description = "IPython: Productive Interactive Computing"
 category = "dev"
 optional = false
@@ -279,7 +292,7 @@ test = ["nose (>=0.10.1)", "requests", "testpath", "pygments", "nbformat", "ipyk
 
 [[package]]
 name = "jedi"
-version = "0.18.0"
+version = "0.18.1"
 description = "An autocompletion tool for Python that can be used for text editors."
 category = "dev"
 optional = false
@@ -290,11 +303,11 @@ parso = ">=0.8.0,<0.9.0"
 
 [package.extras]
 qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
-testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<6.0.0)"]
+testing = ["Django (<3.1)", "colorama", "docopt", "pytest (<7.0.0)"]
 
 [[package]]
 name = "kombu"
-version = "5.2.1"
+version = "5.2.2"
 description = "Messaging library for Python."
 category = "main"
 optional = false
@@ -313,7 +326,7 @@ mongodb = ["pymongo (>=3.3.0,<3.12.1)"]
 msgpack = ["msgpack"]
 pyro = ["pyro4"]
 qpid = ["qpid-python (>=0.26)", "qpid-tools (>=0.26)"]
-redis = ["redis (>=3.4.1)"]
+redis = ["redis (>=3.4.1,<4.0.0)"]
 slmq = ["softlayer-messaging (>=1.0.3)"]
 sqlalchemy = ["sqlalchemy"]
 sqs = ["boto3 (>=1.9.12)", "pycurl (>=7.44.1,<7.45.0)", "urllib3 (>=1.26.7)"]
@@ -345,7 +358,7 @@ testing = ["docopt", "pytest (<6.0.0)"]
 
 [[package]]
 name = "pdftotext"
-version = "2.2.1"
+version = "2.2.2"
 description = "Simple PDF text extraction"
 category = "main"
 optional = false
@@ -372,7 +385,7 @@ python-versions = "*"
 
 [[package]]
 name = "prompt-toolkit"
-version = "3.0.21"
+version = "3.0.22"
 description = "Library for building powerful interactive command lines in Python"
 category = "main"
 optional = false
@@ -442,7 +455,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "traitlets"
-version = "5.1.0"
+version = "5.1.1"
 description = "Traitlets Python configuration system"
 category = "dev"
 optional = false
@@ -489,7 +502,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "5ffa4d713ddcf904615939f5f7a75d750b95f8cc6d50227566b7b1cffaad04c0"
+content-hash = "e63fda8db6b946900f0cfc2fb7225f9bfd0f000bf9cdd3c5de02161539812183"
 
 [metadata.files]
 amqp = [
@@ -513,8 +526,8 @@ billiard = [
     {file = "billiard-3.6.4.0.tar.gz", hash = "sha256:299de5a8da28a783d51b197d496bef4f1595dd023a93a4f59dde1886ae905547"},
 ]
 celery = [
-    {file = "celery-5.2.0-py3-none-any.whl", hash = "sha256:1664b8cf5051c86188e86f1afb85213927f92b8818e2315e34b010da0d767b98"},
-    {file = "celery-5.2.0.tar.gz", hash = "sha256:4d858a8fe53c07a9f0cbf8cf1da28e8abe5464d0aba5713bf83908e74277734b"},
+    {file = "celery-5.2.1-py3-none-any.whl", hash = "sha256:cc63ea6572d558be65297ba6db7a7979e64c0a3d0d61212d6302ef1ca05a0d22"},
+    {file = "celery-5.2.1.tar.gz", hash = "sha256:b41a590b49caf8e6498a57db628e580d5f8dc6febda0f42de5d783aed5b7f808"},
 ]
 click = [
     {file = "click-8.0.3-py3-none-any.whl", hash = "sha256:353f466495adaeb40b6b5f592f9f91cb22372351c84caeb068132442a4518ef3"},
@@ -541,8 +554,8 @@ decorator = [
     {file = "decorator-5.1.0.tar.gz", hash = "sha256:e59913af105b9860aa2c8d3272d9de5a56a4e608db9a2f167a8480b323d529a7"},
 ]
 django = [
-    {file = "Django-3.2.8-py3-none-any.whl", hash = "sha256:42573831292029639b798fe4d3812996bfe4ff3275f04566da90764daec011a5"},
-    {file = "Django-3.2.8.tar.gz", hash = "sha256:f6d2c4069c9b9bfac03bedff927ea1f9e0d29e34525cec8a68fd28eb2a8df7af"},
+    {file = "Django-3.2.9-py3-none-any.whl", hash = "sha256:e22c9266da3eec7827737cde57694d7db801fedac938d252bf27377cec06ed1b"},
+    {file = "Django-3.2.9.tar.gz", hash = "sha256:51284300f1522ffcdb07ccbdf676a307c6678659e1284f0618e5a774127a6a08"},
 ]
 django-cors-headers = [
     {file = "django-cors-headers-3.10.0.tar.gz", hash = "sha256:cd6f4360f5246569c149dc1c40c907c191f1ec45551e10d2a2e2e68512652f78"},
@@ -552,9 +565,13 @@ django-debug-toolbar = [
     {file = "django-debug-toolbar-3.2.2.tar.gz", hash = "sha256:8c5b13795d4040008ee69ba82dcdd259c49db346cf7d0de6e561a49d191f0860"},
     {file = "django_debug_toolbar-3.2.2-py3-none-any.whl", hash = "sha256:d7bab7573fab35b0fd029163371b7182f5826c13da69734beb675c761d06a4d3"},
 ]
+django-environ = [
+    {file = "django-environ-0.8.1.tar.gz", hash = "sha256:6f0bc902b43891656b20486938cba0861dc62892784a44919170719572a534cb"},
+    {file = "django_environ-0.8.1-py2.py3-none-any.whl", hash = "sha256:42593bee519a527602a467c7b682aee1a051c2597f98c45f4f4f44169ecdb6e5"},
+]
 django-extensions = [
-    {file = "django-extensions-3.1.3.tar.gz", hash = "sha256:5f0fea7bf131ca303090352577a9e7f8bfbf5489bd9d9c8aea9401db28db34a0"},
-    {file = "django_extensions-3.1.3-py3-none-any.whl", hash = "sha256:50de8977794a66a91575dd40f87d5053608f679561731845edbd325ceeb387e3"},
+    {file = "django-extensions-3.1.5.tar.gz", hash = "sha256:28e1e1bf49f0e00307ba574d645b0af3564c981a6dfc87209d48cb98f77d0b1a"},
+    {file = "django_extensions-3.1.5-py3-none-any.whl", hash = "sha256:9238b9e016bb0009d621e05cf56ea8ce5cce9b32e91ad2026996a7377ca28069"},
 ]
 django-haystack = [
     {file = "django-haystack-3.1.1.tar.gz", hash = "sha256:6d05756b95d7d5ec1dbd4668eb999ced1504b47f588e2e54be53b1404c516a82"},
@@ -569,16 +586,16 @@ djangorestframework = [
     {file = "djangorestframework-3.12.4.tar.gz", hash = "sha256:f747949a8ddac876e879190df194b925c177cdeb725a099db1460872f7c0a7f2"},
 ]
 ipython = [
-    {file = "ipython-7.28.0-py3-none-any.whl", hash = "sha256:f16148f9163e1e526f1008d7c8d966d9c15600ca20d1a754287cf96d00ba6f1d"},
-    {file = "ipython-7.28.0.tar.gz", hash = "sha256:2097be5c814d1b974aea57673176a924c4c8c9583890e7a5f082f547b9975b11"},
+    {file = "ipython-7.29.0-py3-none-any.whl", hash = "sha256:a658beaf856ce46bc453366d5dc6b2ddc6c481efd3540cb28aa3943819caac9f"},
+    {file = "ipython-7.29.0.tar.gz", hash = "sha256:4f69d7423a5a1972f6347ff233e38bbf4df6a150ef20fbb00c635442ac3060aa"},
 ]
 jedi = [
-    {file = "jedi-0.18.0-py2.py3-none-any.whl", hash = "sha256:18456d83f65f400ab0c2d3319e48520420ef43b23a086fdc05dff34132f0fb93"},
-    {file = "jedi-0.18.0.tar.gz", hash = "sha256:92550a404bad8afed881a137ec9a461fed49eca661414be45059329614ed0707"},
+    {file = "jedi-0.18.1-py2.py3-none-any.whl", hash = "sha256:637c9635fcf47945ceb91cd7f320234a7be540ded6f3e99a50cb6febdfd1ba8d"},
+    {file = "jedi-0.18.1.tar.gz", hash = "sha256:74137626a64a99c8eb6ae5832d99b3bdd7d29a3850fe2aa80a4126b2a7d949ab"},
 ]
 kombu = [
-    {file = "kombu-5.2.1-py3-none-any.whl", hash = "sha256:31bd287191bf56b1addba54a28eced8d6b6b5ba57ad184f48b065578f73c8e33"},
-    {file = "kombu-5.2.1.tar.gz", hash = "sha256:f262a2adc71b53e5b7dad4933bbdee65d8766ca4df6a9043b13edaad2144aaec"},
+    {file = "kombu-5.2.2-py3-none-any.whl", hash = "sha256:d36f0cde6a18d9eb7b6b3aa62a59bfdff7f5724689850e447eca5be8efc9d501"},
+    {file = "kombu-5.2.2.tar.gz", hash = "sha256:0f5d0763fb916808f617b886697b2be28e6bc35026f08e679697fc814b48a608"},
 ]
 matplotlib-inline = [
     {file = "matplotlib-inline-0.1.3.tar.gz", hash = "sha256:a04bfba22e0d1395479f866853ec1ee28eea1485c1d69a6faf00dc3e24ff34ee"},
@@ -589,7 +606,7 @@ parso = [
     {file = "parso-0.8.2.tar.gz", hash = "sha256:12b83492c6239ce32ff5eed6d3639d6a536170723c6f3f1506869f1ace413398"},
 ]
 pdftotext = [
-    {file = "pdftotext-2.2.1.tar.gz", hash = "sha256:a067c121654917ecbe07fbd71c807c34bbdb1ea029e269ddd11925ee7e191d3f"},
+    {file = "pdftotext-2.2.2.tar.gz", hash = "sha256:2a9aa89bc62022408781b39d188fabf5a3ad1103b6630f32c4e27e395f7966ee"},
 ]
 pexpect = [
     {file = "pexpect-4.8.0-py2.py3-none-any.whl", hash = "sha256:0b48a55dcb3c05f3329815901ea4fc1537514d6ba867a152b581d69ae3710937"},
@@ -600,8 +617,8 @@ pickleshare = [
     {file = "pickleshare-0.7.5.tar.gz", hash = "sha256:87683d47965c1da65cdacaf31c8441d12b8044cdec9aca500cd78fc2c683afca"},
 ]
 prompt-toolkit = [
-    {file = "prompt_toolkit-3.0.21-py3-none-any.whl", hash = "sha256:62b3d3ea5a3ccee94dc1aac018279cf64866a76837156ebe159b981c42dd20a8"},
-    {file = "prompt_toolkit-3.0.21.tar.gz", hash = "sha256:27f13ff4e4850fe8f860b77414c7880f67c6158076a7b099062cc8570f1562e5"},
+    {file = "prompt_toolkit-3.0.22-py3-none-any.whl", hash = "sha256:48d85cdca8b6c4f16480c7ce03fd193666b62b0a21667ca56b4bb5ad679d1170"},
+    {file = "prompt_toolkit-3.0.22.tar.gz", hash = "sha256:449f333dd120bd01f5d296a8ce1452114ba3a71fae7288d2f0ae2c918764fa72"},
 ]
 ptyprocess = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
@@ -631,8 +648,8 @@ sqlparse = [
     {file = "sqlparse-0.4.2.tar.gz", hash = "sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae"},
 ]
 traitlets = [
-    {file = "traitlets-5.1.0-py3-none-any.whl", hash = "sha256:03f172516916220b58c9f19d7f854734136dd9528103d04e9bf139a92c9f54c4"},
-    {file = "traitlets-5.1.0.tar.gz", hash = "sha256:bd382d7ea181fbbcce157c133db9a829ce06edffe097bcf3ab945b435452b46d"},
+    {file = "traitlets-5.1.1-py3-none-any.whl", hash = "sha256:2d313cc50a42cd6c277e7d7dc8d4d7fedd06a2c215f78766ae7b1a66277e0033"},
+    {file = "traitlets-5.1.1.tar.gz", hash = "sha256:059f456c5a7c1c82b98c2e8c799f39c9b8128f6d0d46941ee118daace9eb70c7"},
 ]
 vine = [
     {file = "vine-5.0.0-py2.py3-none-any.whl", hash = "sha256:4c9dceab6f76ed92105027c49c823800dd33cacce13bdedc5b914e3514b7fb30"},

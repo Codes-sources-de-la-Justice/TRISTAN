@@ -11,21 +11,28 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from environ import Env
+
+
+env = Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, [])
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+Env.read_env(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qv8udc7-(zr$20v9vat1uy^ziq_p!c%w2gv^*pb2s@dkod@m=!'
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-qv8udc7-(zr$20v9vat1uy^ziq_p!c%w2gv^*pb2s@dkod@m=!')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -42,7 +49,7 @@ INSTALLED_APPS = [
 if DEBUG:
     INSTALLED_APPS += ['corsheaders']
     CORS_ORIGIN_WHITELIST = (
-        'http://localhost:3000',
+        env('TRISTAN_FRONTEND', default='http://localhost:5201'),
     ) # React.js development
 
 INSTALLED_APPS += ['api',
@@ -95,10 +102,7 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db(default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 }
 
 
@@ -124,9 +128,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-fr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = env('TIMEZONE', default='UTC')
 
 USE_I18N = True
 
@@ -146,11 +150,11 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Celery configuration
-CELERY_TIMEZONE = "Europe/Paris"
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND = "redis"
+CELERY_TIMEZONE = env('TIMEZONE', default='UTC')
+CELERY_BROKER_URL = env('REDIS_URL', default="redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default="redis")
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 # SPS configuration
-SPS_API_URL_BASE = "http://localhost:3001"
+SPS_API_URL_BASE = env('SPS_API_URL_BASE', default="http://localhost:3001")
