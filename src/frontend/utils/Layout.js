@@ -72,8 +72,8 @@ function expandNodeValue(val) {
 	}
 	const nodeValue = {...val, ...parameters[val.type]};
 	if (val.type === "icon") {
-		nodeValue.width = 64 + (!!nodeValue.label ? 10 : 0);
-		nodeValue.height = 64 + (!!nodeValue.label ? 10 : 0);
+		nodeValue.width = 64 + (!!nodeValue.label.length ? 1.7 * nodeValue.label.length : 0);
+		nodeValue.height = 64 + (!!nodeValue.label.length ? 0.2 * nodeValue.label.length : 0);
 	}
 
 	return nodeValue
@@ -86,13 +86,53 @@ export function fromRawTimeline(timeline) {
 	g.setDefaultEdgeLabel(() => ({}));
 
 
+
+	Object.keys(timeline.facts).forEach(index => {
+		const fact = timeline.facts[index];
+
+		g.setNode(`${index}-startdate`, expandNodeValue({
+			label: fact.start_utc,
+			type: "date"
+		}));
+
+		if (fact.end_utc) {
+			g.setNode(`${index}-enddate`, expandNodeValue({
+				label: fact.end_utc,
+				type: "date"
+			}));
+			g.setEdge(index, `${index}-enddate`);
+		}
+
+		g.setNode(index, expandNodeValue({
+			label: fact.libelle ? `${fact.libelle} - ${fact.natinf}` : `${fact.natinf}`,
+			type: "icon",
+			icon: faEdit
+		}));
+
+		g.setEdge(`${index}-startdate`, index);
+	});
+
 	Object.keys(timeline.nodes).forEach(index => {
 		const n = timeline.nodes[index]
 		g.setNode(index, expandNodeValue({
 			label: `${n.Personne_Nom} ${n.Personne_Prenom}, rôle: ${n.Personne_Implication}`,
 			type: "person"
 		}));
+
+		if (n.Personne_Telephone) {
+			g.setNode(`${index}-phone`, expandNodeValue({
+				label: n.Personne_Telephone,
+				type: "phone_number"
+			}));
+			g.setEdge(index, `${index}-phone`);
+		}
+
+
+		n.fact_ids.forEach(f_id => {
+			g.setEdge(f_id, index);
+		});
 	});
+
 
 	return g;
 }
