@@ -3,7 +3,8 @@ let
   callPackage = pkgs.callPackage;
   backend = callPackage ./nix/backend.nix {};
   frontend = callPackage ./nix/frontend.nix {};
-in {
+in rec {
+  ci = [ docker.backend-app docker.backend-worker ];
   docker = callPackage ./nix/docker.nix {};
   shell = with pkgs;
     mkShell {
