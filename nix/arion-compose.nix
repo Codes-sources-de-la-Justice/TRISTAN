@@ -22,6 +22,9 @@ in
         DJANGO_SETTINGS_MODULE = "common.settings";
         DATABASE_URL = "postgres://postgres:just1c3@postgres/tristan";
       };
+      service.ports = [
+        "8000"
+      ];
     };
 
     backend-worker = {
@@ -53,9 +56,17 @@ in
       service.useHostStore = true;
       service.command = [
         "${pkgs.nodePackages.json-server}/bin/json-server"
+        "/var/lib/sps/db.json"
+        "--static"
+        "/var/lib/sps/public"
+        "--watch"
+        "--port 3000"
       ];
       service.container_name = "tristan_sps_api_mock";
-      # TODO: finish this.
+      service.volumes = [ "${toString ../contrib/sps-mock}:/var/lib/sps" ];
+      service.ports = [
+        "3000"
+      ];
     };
 
     postgres = {
