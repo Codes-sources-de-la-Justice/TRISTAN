@@ -4,7 +4,11 @@ let
   backend = callPackage ./nix/backend.nix {};
   frontend = callPackage ./nix/frontend.nix {};
 in rec {
-  ci = [ docker.backend-app docker.backend-worker ];
+  dev-containers = pkgs.arion.build {
+    modules = [ ./nix/arion-compose.nix ];
+    pkgs = import ./nix/arion-pkgs.nix;
+  };
+  ci = [ docker.backend-app docker.backend-worker dev-containers ];
   docker = callPackage ./nix/docker.nix {};
   shell = with pkgs;
     mkShell {
