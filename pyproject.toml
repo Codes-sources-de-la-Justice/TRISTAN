@@ -3,7 +3,7 @@ name = "eig_tristan"
 version = "0.1.0"
 description = "Application web pour l'EIG Tristan"
 authors = ["Ryan LAHFA <ryan.lahfa@justice.gouv.fr>"]
-license = "prietary"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
