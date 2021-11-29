@@ -22,6 +22,9 @@ in {
 
         # Development app/worker runner
         foreman
+        # Docker-Compose on steroids
+        arion
+        docker-client # Required when using podman
 
         # For SPS mock
         nodePackages.json-server

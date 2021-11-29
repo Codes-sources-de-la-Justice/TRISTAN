@@ -7,11 +7,13 @@ let
     });
 in
   {
+    # With development dependencies
     env = poetry2nix.mkPoetryEnv {
       projectDir = ../.;
       inherit overrides;
     };
 
+    # Non-development dependencies
     app = poetry2nix.mkPoetryApplication {
       projectDir = ../.;
       inherit overrides;

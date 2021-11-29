@@ -23,7 +23,38 @@ Ensuite: `yarn install && poetry install` devrait installer toutes les dépendan
 
 ### Avec Docker
 
-TODO.
+#### Conteneurs pour la production
+
+Il est possible de produire un conteneur compatible OCI pour le backend en effectuant :
+
+```
+$ nix-build -A docker.backend-app
+$ nix-build -A docker.backend-worker # Actuellement les mêmes images pour le moment.
+```
+
+Les chemins produits sont des tarballs qui peuvent être chargés et minimales, elles ne contiennent que la clôture transitive des dépendances de l'application.
+
+#### Conteneurs pour le développement (à la Docker-Compose)
+
+Est utilisé: <https://github.com/hercules-ci/arion> — qui peut produire un authentique fichier YAML Docker Compose au besoin.
+
+On peut lire le fichier dans `nix/arion-compose.nix` et effectuer les ajustements, PostgreSQL stocke les données dans `./state/postgres-data` avec des permissions différentes de l'utilisateur courant (!).
+
+Cela démarre :
+
+- le backend Django ;
+- un worker Celery ;
+- un Redis ;
+- un PostgreSQL ;
+- une API mock de SPS ;
+
+en faisant simplement :
+
+```console
+$ arion up -d
+```
+
+Attention, il est nécessaire de fournir un fichier de base de données JSON valide pour l'API mock de SPS, conformément aux instructions plus bas, sinon le mock ne démarrera pas et les analyseurs et le frontend sera en échec.
 
 ### Avec Nix
 
