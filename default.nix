@@ -1,38 +1,43 @@
 { pkgs ? import <nixpkgs> { } }:
 let
-  env = pkgs.poetry2nix.mkPoetryEnv {
-    projectDir = ./.;
-    overrides = pkgs.poetry2nix.overrides.withDefaults (self: super: {
-      tokenizers = (super.tokenizers.overridePythonAttrs (old: {
-        nativeBuildInputs = (old.nativeBuildInputs or [] ) ++ [ self.setuptools-rust ];
-      })).override { preferWheel = true; };
-      pdftotext = super.pdftotext.overridePythonAttrs (old: {
-        buildInputs = (old.buildInputs or []) ++ (with pkgs; [ pkg-config poppler ]);
-      });
-
-      pymupdf = super.pymupdf.overrideAttrs (old: {
-        postPatch = ''
-          substituteInPlace setup.py \
-          --replace '/usr/include/mupdf' ${pkgs.mupdf.dev}/include/mupdf
-        '';
-        nativeBuildInputs = [ pkgs.swig ];
-      });
-    });
-  };
-  jsDeps = pkgs.yarn2nix-moretea.mkYarnModules {
-    pname = "tristan-frontend";
-    version = "0.1.0";
-    packageJSON = ./package.json;
-    yarnLock = ./yarn.lock;
-    yarnNix = ./yarn.nix;
-  };
+  callPackage = pkgs.callPackage;
+  backend = callPackage ./nix/backend.nix {};
+  frontend = callPackage ./nix/frontend.nix {};
 in {
+  docker = callPackage ./nix/docker.nix {};
   shell = with pkgs;
     mkShell {
-      buildInputs = [ env yarn2nix yarn nodejs yq nodePackages.json-server foreman ];
+      buildInputs = [ 
+        # Python's backend
+        backend.env
+
+        # Node.js
+        # TODO: add frontend.dependencies so that yarn install is not necessary.
+        nodejs
+        yarn2nix
+        yarn
+
+        # jq-like tool for XML
+        yq
+
+        # Development app/worker runner
+        foreman
+
+        # For SPS mock
+        nodePackages.json-server
+
+        # Vulnerabilities assessments
+        nodePackages.snyk
+      ];
+
+      # Ensure Puppeteer can find a Chromium browser.
       PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium.outPath}/bin/chromium";
+      # Use common settings.
       DJANGO_SETTINGS_MODULE = "common.settings";
+      # Development shell is in debug.
       DEBUG = "True";
+
+      # TODO: once react-scripts buggy behavior with caching is fixed, use Nix for frontend.
       # node_modules = "${jsDeps}/node_modules";
       CACHE_DIR = "/var/cache/";
       /* shellHook = ''
