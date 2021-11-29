@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Application web pour l'EIG Tristan"
 authors = ["Ryan LAHFA <ryan.lahfa@justice.gouv.fr>"]
 license = "MIT"
+packages = [ { include = "api", from = "src" }, { include = "analyzer", from = "src" }, { include = "common", from = "src" } ]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -20,6 +21,7 @@ xmltodict = "^0.12.0"
 django-cors-headers = "^3.10.0"
 # flair = "^0.9"
 django-environ = "^0.8.1"
+gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
 django-debug-toolbar = "^3.2.2"
