@@ -4,11 +4,12 @@ let
   backend = callPackage ./nix/backend.nix {};
   frontend = callPackage ./nix/frontend.nix {};
 in rec {
+  inherit backend frontend;
   dev-containers = pkgs.arion.build {
     modules = [ ./nix/arion-compose.nix ];
     pkgs = import ./nix/arion-pkgs.nix;
   };
-  ci = [ docker.backend-app docker.backend-worker dev-containers ];
+  ci = [ docker.backend-app docker.backend-worker frontend.production-bundle dev-containers ];
   docker = callPackage ./nix/docker.nix {};
   shell = with pkgs;
     mkShell {
@@ -44,6 +45,8 @@ in rec {
       DJANGO_SETTINGS_MODULE = "common.settings";
       # Development shell is in debug.
       DEBUG = "True";
+      # TRISTAN frontend
+      TRISTAN_FRONTEND = "http://localhost:5200";
 
       # TODO: once react-scripts buggy behavior with caching is fixed, use Nix for frontend.
       # node_modules = "${jsDeps}/node_modules";

@@ -16,7 +16,7 @@ import { fromRawTimeline } from "./utils/Layout.js";
 
 import PSPDFKit from "./components/PSPDFKit.js";
 
-import '../../node_modules/react-simple-tree-menu/dist/main.css';
+import "react-simple-tree-menu/dist/main.css";
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet'
 
