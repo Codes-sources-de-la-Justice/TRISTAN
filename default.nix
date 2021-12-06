@@ -25,7 +25,6 @@ in rec {
       backend.env
 
       # Node.js
-      # TODO: add frontend.dependencies so that yarn install is not necessary.
       nodejs
       yarn2nix
       yarn
@@ -48,6 +47,7 @@ in rec {
 
     # Ensure Puppeteer can find a Chromium browser.
     PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium.outPath}/bin/chromium";
+    # Do not symlink the initial node_modules, otherwise, it will not be possible to interactively edit the package(-lock).json.
     node_modules_mode = "copy";
     node_modules_attrs = {
       PUPPETEER_SKIP_DOWNLOAD = "true";

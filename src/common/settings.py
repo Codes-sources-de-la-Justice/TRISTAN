@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 if DEBUG:
     INSTALLED_APPS += ['corsheaders']
     CORS_ORIGIN_WHITELIST = (
-        env('TRISTAN_FRONTEND', default='http://localhost:5201'),
+        env('TRISTAN_FRONTEND', default='http://localhost:3000'),
     ) # React.js development
 
 INSTALLED_APPS += ['api',
