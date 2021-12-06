@@ -12,12 +12,16 @@ import fg from 'fast-glob'
 async function emitAllFilesInSrcForTarget(src, target, emitFile) {
 	const fstat = await stat(src)
 
-	const targetPath = join(target, basename(src));
+	let targetPath = join(target, basename(src));
 	if (fstat.isDirectory()) {
 		for (const file of await readdir(src)) {
 			await copyToDir(join(src, file), targetPath);
 		}
 	} else {
+		if (targetPath[0] === '/') {
+			targetPath = targetPath.substr(1);
+		}
+
 		emitFile({
 			fileName: targetPath,
 			source: await readFile(src),
