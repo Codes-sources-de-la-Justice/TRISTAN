@@ -1,21 +1,11 @@
-{ yarn2nix-moretea, lib }:
+{ npmlock2nix, lib, src }:
 {
-  dependencies = yarn2nix-moretea.mkYarnModules {
-    pname = "tristan-frontend";
-    packageJSON = ../package.json;
-    yarnLock = ../yarn.lock;
-    yarnNix = ../yarn.nix;
+  dependencies = npmlock2nix.node_modules {
+    inherit src;
   };
-  production-bundle = yarn2nix-moretea.mkYarnPackage {
-    pname = "tristan-frontend";
-    src = lib.cleanSourceWith {
-      filter = name: type: let baseName = baseNameOf (toString name); in ! (baseName == "state" || baseName == "node_modules");
-      src = lib.cleanSource ../.;
-    };
-    yarnNix = ./yarn.nix;
-
-    installPhase = ''
-      yarn build
-    '';
+  production-bundle = npmlock2nix.build {
+    inherit src;
+    installPhase = "cp -r src/frontend/dist $out";
+    buildCommands = [ "npm run build-vite" ];
   };
 }

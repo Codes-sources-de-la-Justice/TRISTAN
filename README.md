@@ -62,7 +62,6 @@ Il suffit de :
 
 ```console
 $ nix-shell
-[nix-shell] $ yarn install
 [nix-shell] $ foreman start
 ```
 
