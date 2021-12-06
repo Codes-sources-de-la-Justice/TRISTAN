@@ -6,6 +6,6 @@
   production-bundle = npmlock2nix.build {
     inherit src;
     installPhase = "cp -r src/frontend/dist $out";
-    buildCommands = [ "npm run build-vite" ];
+    buildCommands = [ "npm run build" ];
   };
 }
