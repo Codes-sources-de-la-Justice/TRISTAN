@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.5",
-    "@dataesr/react-dsfr": "^0.6.7",
+    "@dataesr/react-dsfr": "^0.7.8",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.15",
