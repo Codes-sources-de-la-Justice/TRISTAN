@@ -23,7 +23,7 @@
     "react-joyride": "^2.3.2",
     "react-konva": "^17.0.2-5",
     "react-leaflet": "^3.2.2",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "^5.0.0",
     "react-simple-tree-menu": "^1.1.18",
     "use-image": "^1.0.8",
     "web-vitals": "^1.0.1",
