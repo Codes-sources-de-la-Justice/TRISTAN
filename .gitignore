@@ -10,3 +10,4 @@ contrib/sps-mock/public
 state/
 **/.cache
 src/frontend/dist
+coverage/

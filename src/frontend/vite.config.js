@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+//import react from '@vitejs/plugin-react'
+import reactRefresh from '@vitejs/plugin-react-refresh'
 
 import { stat, readdir, readFile } from 'fs/promises'
 import { join, basename, dirname, normalize } from 'path'
@@ -112,8 +113,9 @@ export function patchReactFloater() {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), loadPSPDFKit()],
+	plugins: [reactRefresh(), loadPSPDFKit()],
 	cacheDir: '.cache/vite',
+	publicDir: "assets",
 	server: {
 		cors: true
 	},
