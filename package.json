@@ -29,7 +29,7 @@
   "scripts": {
     "start": "vite src/frontend",
     "build": "vite build src/frontend",
-    "test": "web-test-runner \"**/*.test.jsx\" --coverage --config src/frontend/web-test-runner.config.js --node-resolve",
+    "test": "web-test-runner \"**/*.test.jsx\" --coverage --config src/frontend/web-test-runner.config.js",
     "test:jest": "vite-jest src/frontend",
     "test:a11y": "pa11y"
   },
