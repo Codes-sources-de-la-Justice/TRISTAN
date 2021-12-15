@@ -51,6 +51,10 @@ let
       DEBUG = "True";
       # TRISTAN frontend
       TRISTAN_FRONTEND = "http://localhost:3000";
+
+      shellHook = if copyNodeModules then ''
+        chmod +x node_modules/esbuild-linux-64/bin/esbuild || exit 0
+      '' else "";
     };
 in rec {
   inherit backend frontend;

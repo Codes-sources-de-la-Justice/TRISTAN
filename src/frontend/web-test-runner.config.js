@@ -1,4 +1,31 @@
-const vite = require('vite-web-test-runner-plugin');
+const path = require('path')
+const vite = require('vite')
+
+function withVite (extraParams) {
+  let server;
+
+  return {
+    name: "vite-plugin",
+
+    async serverStart({ app }) {
+      server = await vite.createServer({
+        clearScreen: false,
+				...extraParams
+      });
+      await server.listen();
+      const port = server.config.server.port;
+      const protocol = server.config.server.https ? "https" : "http";
+      app.use((ctx, _) => {
+        ctx.redirect(`${protocol}://localhost:${port}${ctx.originalUrl}`);
+        return;
+      });
+    },
+
+    async serverStop() {
+      return server.close();
+    },
+  };
+};
 
 const ignoredBrowserLogs = [
   '[vite] connecting...',
@@ -7,7 +34,9 @@ const ignoredBrowserLogs = [
 
 module.exports = {
   plugins: [
-    vite(),
+    withVite({
+			configFile: path.join(__dirname, 'vite.config.js')
+		}),
   ],
   coverageConfig: {
     include: [

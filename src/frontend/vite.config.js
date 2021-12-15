@@ -124,5 +124,24 @@ export default defineConfig({
 	},
 	build: {
 		manifest: true
+	},
+	optimizeDeps: {
+		include: [
+			'react',
+			'react-dom',
+			'@testing-library/react',
+			'chai',
+			'wouter',
+			'react-leaflet',
+			'@dataesr/react-dsfr',
+			'react-simple-tree-menu',
+			'leaflet',
+			'axios',
+			'@fortawesome/free-solid-svg-icons',
+			'pspdfkit',
+			'react-konva',
+			'use-image',
+			'dagre'
+		]
 	}
 })
