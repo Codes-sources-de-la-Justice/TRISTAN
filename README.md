@@ -1,5 +1,8 @@
 # TRISTAN
 
+[![Built (code & containers) and cached in Cachix](https://github.com/Codes-sources-de-la-Justice/TRISTAN/actions/workflows/build.yml/badge.svg)](https://github.com/Codes-sources-de-la-Justice/TRISTAN/actions/workflows/build.yml)
+[![Project tests](https://github.com/Codes-sources-de-la-Justice/TRISTAN/actions/workflows/test.yml/badge.svg)](https://github.com/Codes-sources-de-la-Justice/TRISTAN/actions/workflows/test.yml)
+
 ## Qu'est que c'est ?
 
 TRISTAN est un [défi EIG (Entrepreneur d'Intérêt Général)](https://eig.etalab.gouv.fr/defis/tristan/) qui cherche à aider les magistrats dans la préparation dans leur audience.
