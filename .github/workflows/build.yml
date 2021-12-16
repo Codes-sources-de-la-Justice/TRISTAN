@@ -1,6 +1,5 @@
 name: "Build project and containers and cache them in Cachix"
 on:
-  pull_request:
   push:
 jobs:
   ci:
