@@ -55,7 +55,7 @@ def compute_fact_id(fact):
     if 'Natinf' not in fact:
         return None
     else:
-        return f"{fact['Natinf']}/{fact['Fait_GpsX']}/{fact['Fait_GpsY']}"
+        return f"{fact['Natinf']}/{fact.get('Fait_GpsX', 'NOGPS')}/{fact.get('Fait_GpsY', 'NOGPS')}"
 
 def compute_fact_ids(piece):
     data = piece.get('data')
@@ -123,13 +123,13 @@ class BagOfFacts:
     def ingest_sousfait(self, sousfait, extra):
         if 'Natinf' in sousfait:
             kwargs = {
-                'start_utc': sousfait['Periode_Affaire_Debut']['@utc'],
+                'start_utc': sousfait.get('Periode_Affaire_Debut', {'@utc': None})['@utc'],
                 'end_utc': sousfait.get('Periode_Affaire_Fin', {'@utc': None})['@utc'],
                 'tentative': True if sousfait.get('Fait_Tentative', None) == 'OUI' else False,
                 'natinf': sousfait['Natinf'],
                 'qualification': sousfait.get('Fait_Qualification', 'INCONNUE'), # est ce nécessaire, compte tenu du NATINF?
                 'libelle': sousfait.get('Libelle_Fait'),
-                'position': (float(sousfait.get('Fait_GpsX')), float(sousfait.get('Fait_GpsY')))
+                'position': (float(sousfait.get('Fait_GpsX')), float(sousfait.get('Fait_GpsY'))) if all(key in sousfait for key in ('Fait_GpsX', 'Fait_GpsY')) else ('NOGPS', 'NOGPS')
             }
             kwargs.update(extra)
             self.create_or_update(kwargs)
