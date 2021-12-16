@@ -33,6 +33,7 @@ Il est possible de produire un conteneur compatible OCI pour le backend en effec
 ```
 $ nix-build -A docker.backend-app
 $ nix-build -A docker.backend-worker # Actuellement les mêmes images pour le moment.
+$ nix-build -A docker.frontend-static
 ```
 
 Les chemins produits sont des tarballs qui peuvent être chargés et minimales, elles ne contiennent que la clôture transitive des dépendances de l'application.
