@@ -3,14 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.14.5",
     "@dataesr/react-dsfr": "^0.7.8",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.15",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
+    "@vitejs/plugin-react": "^1.1.0",
+    "@vitejs/plugin-react-refresh": "^1.3.6",
     "axios": "^0.24.0",
     "dagre": "^0.8.5",
     "konva": "^8.1.4",
@@ -20,26 +18,30 @@
     "pspdfkit": "^2021.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-joyride": "^2.3.2",
     "react-konva": "^17.0.2-5",
     "react-leaflet": "^3.2.2",
-    "react-scripts": "^4.0.3",
     "react-simple-tree-menu": "^1.1.18",
     "use-image": "^1.0.8",
+    "vite": "^2.6.14",
     "web-vitals": "^1.0.1",
-    "workbox-core": "^6.3.0",
-    "workbox-expiration": "^6.3.0",
-    "workbox-precaching": "^6.3.0",
-    "workbox-routing": "^6.3.0",
-    "workbox-strategies": "^6.3.0",
-    "workbox-webpack-plugin": "^6.3.0",
     "wouter": "^2.8.0-alpha.1"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "vite src/frontend",
+    "build": "vite build src/frontend",
+    "test": "web-test-runner \"**/*.test.jsx\" --coverage --config src/frontend/web-test-runner.config.js --node-resolver",
+    "test:jest": "vite-jest src/frontend",
+    "test:a11y": "pa11y"
+  },
+  "jest": {
+    "preset": "vite-jest",
+    "testEnvironment": "jsdom",
+    "setupFiles": [
+      "jest-canvas-mock"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/frontend/setupTests.js"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -60,8 +62,18 @@
     ]
   },
   "devDependencies": {
-    "customize-cra": "^1.0.0",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@web/test-runner": "^0.13.22",
+    "chai": "^4.3.4",
+    "fast-glob": "^3.2.7",
+    "jest": "^27.4.3",
+    "jest-canvas-mock": "^2.3.1",
+    "jest-environment-jsdom": "^27.4.4",
+    "parseurl": "^1.3.3",
     "prettier": "^2.4.1",
-    "react-app-rewired": "^2.1.8"
+    "send": "^0.17.1",
+    "vite-jest": "^0.1.0",
+    "vite-web-test-runner-plugin": "^0.1.0"
   }
 }

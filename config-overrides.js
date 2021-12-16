@@ -1,5 +1,6 @@
 const path = require('path')
-const { override, addExternalBabelPlugins } = require('customize-cra')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { override, addExternalBabelPlugins, addWebpackPlugin } = require('customize-cra')
 
 module.exports = {
 	paths: function (paths, env) {
@@ -13,6 +14,18 @@ module.exports = {
 	webpack: override(
 		...addExternalBabelPlugins(
 			"@babel/plugin-proposal-nullish-coalescing-operator"
+		),
+		addWebpackPlugin(
+			new CopyWebpackPlugin({
+				patterns: [
+					{
+						from: `${path.dirname(
+							require.resolve('pspdfkit/package.json')
+					)}/dist/pspdfkit-lib`,
+						to: 'pspdfkit-lib',
+					}
+				]
+			})
 		)
 	)
 }

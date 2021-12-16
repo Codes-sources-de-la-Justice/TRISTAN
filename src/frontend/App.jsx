@@ -7,27 +7,32 @@ import { Link, Route } from "wouter";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import { HeaderNav, NavItem } from "@dataesr/react-dsfr"
 
-import Joyride from "react-joyride"
+//import Joyride from "react-joyride"
 import TreeMenu from "react-simple-tree-menu"
 
-import Schema from "./containers/Schema.js";
+import Schema from "./containers/Schema.jsx";
 import ExampleGraph from "./components/ExampleGraph.js";
 import { fromRawTimeline } from "./utils/Layout.js";
 
-import PSPDFKit from "./components/PSPDFKit.js";
+import PSPDFKit from "./components/PSPDFKit.jsx";
 
-import '../../node_modules/react-simple-tree-menu/dist/main.css';
+import "react-simple-tree-menu/dist/main.css";
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet'
 
+import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+import iconUrl from 'leaflet/dist/images/marker-icon.png';
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-	iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
-	iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-	shadowUrl: require('leaflet/dist/images/marker-shadow.png').default
+	iconRetinaUrl,
+	iconUrl,
+	shadowUrl
 });
 
-const baseUrl = `${window.location.protocol}//${window.location.host}/${process.env.PUBLIC_URL}`;
+const baseUrl = `${window.location.protocol}//${window.location.host}/${import.meta.env.BASE_URL}`;
+console.log('baseUrl', baseUrl);
 
 const franceCenter = [ 46.7111, 1.7191 ];
 
@@ -177,7 +182,7 @@ function Affaire({id}) {
 
 	return (
 		<main className="App">
-			<Joyride steps={affaireSteps} continuous={true} showSkipButton={true} />
+			{/* <Joyride steps={affaireSteps} continuous={true} showSkipButton={true} /> */}
 			<section className="App-dual-workflow">
 				<section className="liste-pieces-container">
 					<ul className="liste-pieces">

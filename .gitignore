@@ -7,3 +7,7 @@ build/
 contrib/sps-mock/*.json
 contrib/sps-mock/public
 **/*.tar.gz
+state/
+**/.cache
+src/frontend/dist
+coverage/
