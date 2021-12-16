@@ -4,9 +4,12 @@ import sys
 
 def extract_xml(pdf):
     catalog = pdf.trailer['/Root']
-    embedded_files = catalog['/Names']['/EmbeddedFiles']['/Names']
+    try:
+        embedded_files = catalog['/Names']['/EmbeddedFiles']['/Names']
+    except KeyError:
+        return None
 
-    if 'Données' in embedded_files[0]:
+    if any(marker in embedded_files[0] for marker in ('Données', 'application/xml')):
         soup = embedded_files[1].getObject()
 
         return soup['/EF']['/F'].getData()
@@ -29,7 +32,8 @@ def main():
         if xml_data:
             sys.stdout.write(xml_data.decode('utf8'))
         else:
-            print('[!] No XML found')
+            print('[!] No XML found in embedded files if they do exist')
+            sys.exit(1)
 
 
 if __name__ == '__main__':
