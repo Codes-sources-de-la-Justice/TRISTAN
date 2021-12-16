@@ -1,4 +1,4 @@
-name: "Frontend tests"
+name: "Test the project"
 on:
   pull_request:
 jobs:
@@ -10,3 +10,11 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-unstable
     - run: nix-shell default.nix -A ciShell --run "npm test"
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.4.0
+    - uses: cachix/install-nix-action@v15
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    - run: nix-shell default.nix -A ciShell --run "pytest"
