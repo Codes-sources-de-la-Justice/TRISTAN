@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Circle, Arrow, Group, Text, Path, Rect } from "react-konva";
 import dagre from "dagre";
 
