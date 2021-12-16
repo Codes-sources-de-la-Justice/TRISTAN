@@ -1,5 +1,6 @@
-{ dockerTools, callPackage }:
+{ thttpd, dockerTools, callPackage, projectSrc }:
 let
+  frontend = callPackage ./frontend.nix { inherit projectSrc; };
   backend = callPackage ./backend.nix {};
   mkBackendContainer = { name, cmd, ports ? {}, ... }: dockerTools.buildLayeredImage {
     inherit name;
@@ -11,6 +12,16 @@ let
   };
 in
   {
+    # TODO: use other users than root.
+    frontend-static = dockerTools.buildLayeredImage {
+      name = "tristan-static-frontend";
+      contents = [ ];
+      config = {
+        Cmd = "${thttpd}/bin/thttpd -D -h 0.0.0.0 -p 3000 -d ${frontend.production-bundle} -l - -M 60";
+        ExposedPorts = { "3000/tcp" = {}; };
+      };
+    };
+
     backend-app = mkBackendContainer {
       name = "tristan-backend-app";
       cmd = "gunicorn api.wsgi:application";

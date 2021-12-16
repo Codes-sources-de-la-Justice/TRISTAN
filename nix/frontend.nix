@@ -1,10 +1,10 @@
-{ npmlock2nix, lib, src }:
+{ npmlock2nix, lib, projectSrc }:
 {
   dependencies = npmlock2nix.node_modules {
-    inherit src;
+    src = projectSrc;
   };
   production-bundle = npmlock2nix.build {
-    inherit src;
+    src = projectSrc;
     node_modules_attrs = {
       PUPPETEER_SKIP_DOWNLOAD = "1";
     };

@@ -8,7 +8,7 @@ let
   };
   backend = callPackage ./nix/backend.nix {};
   frontend = callPackage ./nix/frontend.nix {
-    src = filteredSrc;
+    projectSrc = filteredSrc;
   };
   mkTristanEnv = { copyNodeModules ? false }:
   pkgs.npmlock2nix.shell {
@@ -62,8 +62,10 @@ in rec {
     modules = [ ./nix/arion-compose.nix ];
     pkgs = import ./nix/arion-pkgs.nix;
   };
-  ci = [ docker.backend-app docker.backend-worker frontend.production-bundle dev-containers ];
-  docker = callPackage ./nix/docker.nix {};
+  ci = [ docker.frontend-static docker.backend-app docker.backend-worker frontend.production-bundle dev-containers ];
+  docker = callPackage ./nix/docker.nix {
+    projectSrc = filteredSrc;
+  };
   shell = mkTristanEnv { copyNodeModules = true; };
   ciShell = mkTristanEnv { copyNodeModules = true; }; # Patch vite-jest
 }
