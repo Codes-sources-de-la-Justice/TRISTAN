@@ -68,6 +68,41 @@ function buildFilesystemTree(data) {
 	return tree
 }
 
+function AuditionItem({item, key}) {
+	return (
+		<div>
+			<h2>Audition n°{key}</h2>
+			{item.map(qa => (
+				<div>
+					<h3>Question : {qa[0]}</h3>
+					<h3>Réponse : {qa[1]}</h3>
+				</div>
+			))}
+		</div>
+	);
+}
+
+function Auditions({id}) {
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		if (!loading) {
+			setLoading(true);
+			getLatestAnalysis(id).then(setData);
+		}
+	}, [loading, id]);
+
+	const auditions = data?.filter(p => p.payload.type === "qa").flatMap(p => p.payload.auditions || []);
+
+	return (
+		<div>
+			{auditions && auditions.map((audition, index) => (<AuditionItem key={index} item={audition} />))}
+			{(!auditions || auditions.length === 0) && <h1>Aucune audition</h1>}
+		</div>
+	);
+}
+
 function Timeline({id}) {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -177,6 +212,7 @@ function Affaire({id}) {
 	}, [loading, id]);
 
 	const isAnalysisAvailable = type => currentPayloads?.filter(p => p.type === type).length >= 1
+	const getPayload = type => currentPayloads?.filter(p => p.type === type)[0].payload
 
 	const hierarchyTree = data ? buildFilesystemTree(data) : [];
 
@@ -203,6 +239,11 @@ function Affaire({id}) {
 						<li>
 							<Link href={`/affaires/${id}/viz/map`}>
 								<a href="replace" disabled={isAnalysisAvailable("map")}>Carte des faits</a>
+							</Link>
+						</li>
+						<li>
+							<Link href={`/affaires/${id}/viz/qa`}>
+								<a href="replace" disabled={isAnalysisAvailable("qa")}>Auditions</a>
 							</Link>
 						</li>
 					</ul>
@@ -265,6 +306,10 @@ function App() {
 
 			<Route path="/affaires/:id/viz/map">
 				{params => <Map id={params.id} />}
+			</Route>
+
+			<Route path="/affaires/:id/viz/qa">
+				{params => <Auditions id={params.id} />}
 			</Route>
 
 			<Route path="/affaires/:id/viz/timeline">

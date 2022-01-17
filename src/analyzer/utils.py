@@ -39,7 +39,8 @@ def extract_xml_into_json(file):
 def extract_text(file):
     try:
         pdf = pdftotext.PDF(file)
-        return (str(page) for page in pdf)
-    except pdftotext.Error:
+        return '\n\n'.join(pdf).strip()
+    except pdftotext.Error as e:
+        print('error during text extraction', e)
         # Le PDF ne semble pas nativement numérique ou n'est pas un PDF.
         return None

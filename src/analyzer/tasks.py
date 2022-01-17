@@ -3,6 +3,7 @@ from api.models import AnalysisTicket, AnalysisResult
 import analyzer.sps as sps
 import analyzer.utils as utils
 import analyzer.timeline as timeline
+import analyzer.audition as audition
 import io
 
 def initiate_worktree(ticket):
@@ -34,6 +35,7 @@ def fetch_piece(ticket, item):
     resp = sps.fetch_piece(path)
     raw = io.BytesIO(resp.content)
     xml_data = utils.extract_xml_into_json(raw)
+    raw.seek(0)
     text_data = utils.extract_text(raw)
     # TODO: images
 
@@ -69,6 +71,28 @@ def mk_facts_map(pieces):
             mk_fact_for_map(facts, already_seen, payload, extra)
         
     return payload
+
+def mk_qa_results(pieces):
+    payload = {'type': 'qa', 'auditions': []}
+
+    for piece in pieces:
+        if not piece['text']: # Useless data
+            continue
+        
+        # TODO: use PDF A3 to finish the analysis
+        qs = audition.extract_qa_session(piece['text'])
+        if qs:
+            payload['auditions'].append(qs)
+
+    return payload
+
+@shared_task
+def extract_audition_qa(ticket_id, toc):
+    ticket = AnalysisTicket.objects.get(id=ticket_id)
+    AnalysisResult.objects.create(parent_ticket=ticket,
+                                  payload=mk_qa_results(
+                                      fetch_piece(ticket, item) for item in toc if item['path'].endswith('pdf')
+                                  ))
 
 @shared_task
 def extract_facts_map(ticket_id, toc):
@@ -121,7 +145,8 @@ def start_analyze(ticket_id):
         # registered analyzers
         registered_analysers = list(map(lambda f: f.s(ticket_id, toc), [
             extract_facts_map,
-            extract_facts_timeline
+            extract_facts_timeline,
+            extract_audition_qa,
         ]))
         # TODO: parallelize analyzers and chain to end_analyze.
 
