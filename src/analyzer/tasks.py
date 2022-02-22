@@ -3,6 +3,7 @@ from api.models import AnalysisTicket, AnalysisResult
 import analyzer.sps as sps
 import analyzer.utils as utils
 import analyzer.timeline as timeline
+import analyzer.summary as summary
 import analyzer.audition as audition
 import io
 
@@ -74,7 +75,6 @@ def mk_facts_map(pieces):
 
 def mk_qa_results(pieces):
     payload = {'type': 'qa', 'auditions': []}
-
     for piece in pieces:
         if not piece['text']: # Useless data
             continue
@@ -120,6 +120,19 @@ def extract_facts_timeline(ticket_id, toc):
     )
 
 @shared_task
+def extract_summary_data(ticket_id, toc):
+    ticket = AnalysisTicket.objects.get(id=ticket_id)
+    ctx = summary.GraphContext()
+    for item in filter(lambda i: i['path'].endswith('pdf'), toc):
+        piece = fetch_piece(ticket, item)
+        ctx.ingest(piece)
+    AnalysisResult.objects.create(
+        parent_ticket=ticket,
+        payload={'type': 'summary_data', 'summary': ctx.create_graph()}
+    )
+
+
+@shared_task
 def end_analyze(result, ticket_id):
     AnalysisTicket.objects.filter(pk=ticket_id).update(status=AnalysisTicket.DONE)
 
@@ -147,6 +160,7 @@ def start_analyze(ticket_id):
             extract_facts_map,
             extract_facts_timeline,
             extract_audition_qa,
+            extract_summary_data,
         ]))
         # TODO: parallelize analyzers and chain to end_analyze.
 

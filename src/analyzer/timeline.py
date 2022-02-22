@@ -1,6 +1,7 @@
 import enum
 import dataclasses
 from analyzer.piece import PieceNature, nature_of
+from analyzer.deep_dict import deep_get
 
 class PersonRole(enum.Enum):
     VICTIM = "VICTIME"
@@ -8,12 +9,20 @@ class PersonRole(enum.Enum):
     WITNESS = "TÉMOIN"
     UNKNOWN = "Indéterminé"
 
+def guess_implication(p):
+    if 'Personne_Physique_Auteur_Faits' in p:
+        return PersonRole.AUTHOR
+    elif 'Personne_Physique_Victime_Faits' in p:
+        return PersonRole.VICTIM
+    else:
+        return PersonRole.UNKNOWN
+
 def find_persons(data, role=None):
-    persons = data.get('Procedure', {}).get('Personnes', {}).get('Personnes_Physiques', {}).get('Personne', [])
+    persons = deep_get(data, 'Procedure.Personnes.Personnes_Physiques.Personne')
     if isinstance(persons, list) and role is not None:
-        return filter(lambda p: p.get('Personne_Implication', PersonRole.UNKNOWN) == role.value, persons)
+        return filter(lambda p: p.get('Personne_Implication', PersonRole.UNKNOWN) == role.value or guess_implication(p) is role, persons)
     elif isinstance(persons, dict) and role is not None:
-        return [persons] if persons.get('Personne_Implication', PersonRole.UNKNOWN) == role.value else []
+        return [persons] if persons.get('Personne_Implication', PersonRole.UNKNOWN) == role.value or guess_implication(persons) is role else []
     else:
         return []
 
@@ -30,7 +39,7 @@ def find_indeterminate_persons(data):
     return find_persons(data, role=PersonRole.UNKNOWN)
 
 def find_vehicules(data):
-    return data.get('Procedures', {}).get('Moyens_Transport', {})
+    return deep_get(data, 'Procedures.Moyens_Transport')
 
 def relink_complaint(piece):
     # prend un dépôt de plainte
@@ -39,12 +48,19 @@ def relink_complaint(piece):
 
 
 def reconcile_person_field(key, old_person, new_person, extra):
+    def merge(a, b):
+        if isinstance(a, list) and isinstance(b, list):
+            return a + b
+        elif isinstance(a, dict) and isinstance(b, dict):
+            return a | b
+        else:
+            raise ValueError(f'Cannot merge `{a.__class__}` and `{b.__class__}`')
     # TODO: que réconcilier exactement et comment?
     if key == 'Personne_Implication' and old_person.get(key) == PersonRole.UNKNOWN:
         return new_person.get(key)
 
     if key in extra:
-        return old_person.get(key, []) + new_person.get(key, extra[key] if extra.get(key) else [])
+        return merge(old_person.get(key, []), new_person.get(key, extra[key] if extra.get(key) else []))
 
     return new_person.get(key) if key in new_person else old_person.get(key)
 
@@ -115,7 +131,7 @@ class BagOfFacts:
             current = self.bag[clef]
             for key in (fact.keys() | current.keys()):
                 # TODO: relise la politique de mise à jour.
-                self.bag[clef][key] = fact[key] if (current[key] is None or (current[key] is not None and fact[key] is not None)) else current[key]
+                self.bag[clef][key] = fact.get(key) if (current.get(key) is None or (current.get(key) is not None and fact.get(key) is not None)) else current.get(key)
                 
         else:
             self.bag[clef] = fact
@@ -123,6 +139,7 @@ class BagOfFacts:
     def ingest_sousfait(self, sousfait, extra):
         if 'Natinf' in sousfait:
             kwargs = {
+                'id': int(sousfait.get('Fait_IdAleatoire_LRP', -1)),
                 'start_utc': sousfait.get('Periode_Affaire_Debut', {'@utc': None})['@utc'],
                 'end_utc': sousfait.get('Periode_Affaire_Fin', {'@utc': None})['@utc'],
                 'tentative': True if sousfait.get('Fait_Tentative', None) == 'OUI' else False,
@@ -136,14 +153,14 @@ class BagOfFacts:
             # TODO: injecter l'auteur, la victime et les témoins si possible avec persons.
 
 
-    def ingest(self, piece, persons) -> bool:
+    def ingest(self, piece) -> bool:
         src = piece.get('source')
         data = piece.get('data')
         
         if not data:
             return False
 
-        fait = data.get('Procedure', {}).get('Faits', {})
+        fait = deep_get(data, 'Procedure.Faits', accessor=lambda o, k: o.get(k, {}))
         sousfaits = fait.get('Fait', {})
         if isinstance(sousfaits, list):
             for sousfait in sousfaits:
@@ -245,6 +262,6 @@ class GraphContext:
 
 
 
-        return self.facts.ingest(piece, self.persons)
+        return self.facts.ingest(piece)
 
 

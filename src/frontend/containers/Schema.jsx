@@ -1,61 +1,178 @@
-import Logos from "../logos";
+import React from "react";
+import CytoscapeComponent from 'react-cytoscapejs';
 
-import React, { useState } from "react";
-import { Stage, Layer, Line, Image as KonvaImage } from "react-konva";
-import useImage from "use-image";
+import fcose from 'cytoscape-fcose'
+import cytoscape from 'cytoscape'
 
-import Graph from "../components/Graph";
+import CyReact from 'cytoscape-react';
 
-function Logo({ logo, ...props }) {
-  const [image] = useImage(Logos[logo]);
-  return <KonvaImage image={image} width={100} height={100} {...props} />;
+import './Schema.css';
+
+cytoscape.use(fcose);
+
+const stylesheet = [
+	{
+		selector: "node",
+		style: {
+			shape: "rectangle",
+			label: "data(label)",
+			width: 150,
+			height: 150,
+			"text-max-width": 150,
+			"text-wrap": "wrap", 
+			"text-halign": "center",
+			"text-valign": "center",
+		}
+	}
+];
+
+function OldSchema({elements, layoutConstraints}) {
+	return (<CytoscapeComponent
+		elements={elements}
+		layout={{name: "fcose", ...layoutConstraints, idealEdgeLength: node => 150}}
+		style={{width: "100vw", height: "100vh"}}
+		stylesheet={stylesheet}
+	/>);
 }
 
-function Schema({graph}) {
-	const [stage, setStage] = useState({
-		scale: 1,
-		x: 0,
-		y: 0
-	})
-	// TODO: generalize zoomable & pannable stages.
-	// TODO: handle better values for scaleBy.
-	// TODO: handle onTouchEnd events.
-	const handleWheel = e => {
-		e.evt.preventDefault();
+const debounce = (func, delay, { leading } = {}) => {
+  let timerId
 
-		const scaleBy = 1.15
-		const stage = e.target.getStage()
-		const oldScale = stage.scaleX()
+  return (...args) => {
+    if (!timerId && leading) {
+      func(...args)
+    }
+    clearTimeout(timerId)
 
-		const mousePointTo = {
-			x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
-			y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
-		};
+    timerId = setTimeout(() => func(...args), delay)
+  }
+}
 
-		const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
+class FastCoseGraphWrapper extends CyReact.GraphWrapper {
+	constructor(props) {
+			super(props);
+			this._debounced_layout = debounce(() => {
+				this._layout = this._cy.layout(
+				{'name': 'fcose', 
+					...props.layoutConstraints,
+					//nodeDimensionsIncludeLabels: true,
+					randomize: true,
+					quality: "proof",
+					nodeSeparation: 5000,
+					nodeRepulsion: node => 9999999,
+					idealEdgeLength: edge => 200
+				});
+				this._layout.run();
+			}, 10, {leading: true});
+    }
 
-		setStage({
-			scale: newScale,
-			x: (-(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale),
-			y: (-(mousePointTo.y - stage.getPointerPosition().y / newScale ) * newScale)
-		});
+    layout (params = {}) {
+        if (this._layout) {
+            this._layout.stop();
+            this._layout = undefined;
+        }
+
+        this._debounced_layout(params);
+    }
+
+    cyReady (cy) {
+      this._cy = cy;
+			window._cy = cy;
+			window.rerun_layout = () => this.layout();
+    }
+
+    graphElementDidMount (el_component) {
+        this.layout();
+    }
+
+    graphElementDidUpdate (el_component) {
+        this.layout();
+    }
+}
+
+function wordToTitleCase(str) {
+	return str[0].toUpperCase() + str.substr(1);
+}
+
+function deriveAgeFromDOB(dob) {
+	const [day, month, year] = dob.split("/");
+	const msDelta = new Date() - new Date(year, month, day);
+	return Math.floor(msDelta / (1000 * 3600 * 24 * 365));
+}
+
+class GenericNode extends CyReact.Node {
+	renderPerson() {
+		const person = this.props.metadata;
+		const age = deriveAgeFromDOB(person.Personne_Naissance_Date);
+		return (
+			<div>
+				<h3>{person.Personne_Nom} {person.Personne_Prenom}</h3>
+				<p>{age} ans</p>
+				<p>{person.Personne_Profession["#text"]}</p>
+				<p>{person.Personne_Commune_Residence} {person.Personne_CP_Commune_Residence}</p>
+			</div>
+		);
+	}
+	renderFact() {
+		const fact = this.props.metadata;
+		return (
+			<div>
+				<p style={{fontWeight: "bold"}}>{fact.libelle}</p>
+				<hr />
+				<div>
+					<span>{fact.start_date}</span>
+					->
+					<span>{fact.end_date}</span>
+				</div>
+				<hr />
+				<p>TODO: mettre le lieu</p>
+			</div>
+		);
+	}
+	renderGeneric() {
+		return (
+			<div>{this.props.label}</div>
+		);
+	}
+	render() {
+		const { type } = this.props
+
+		const renderFunction = this[`render${wordToTitleCase(type)}`] || this.renderGeneric;
+
+		return renderFunction.call(this);
+	}
+}
+
+class Schema extends CyReact.Graph {
+	renderNode(node) {
+		const { id } = node
+		return (
+			<CyReact.NodeWrapper key={id} id={id}>
+				<GenericNode {...node} />
+			</CyReact.NodeWrapper>
+		);
 	}
 
-  return (
-    <Stage
-			draggable
-			onWheel={handleWheel}
-      width={window.innerWidth}
-      height={window.innerHeight}
-			scaleX={stage.scale}
-			scaleY={stage.scale}
-			x={stage.x}
-			y={stage.y}
-    >
-      <Layer>
-        <Graph.Graph graph={graph} x={150} y={100} />
-      </Layer>
-    </Stage>
-  );
+	renderEdge({source, target, id}) {
+		return (
+			<CyReact.EdgeWrapper key={id} id={id} source={source} target={target} />
+		);
+	}
+
+	render() {
+		const { layoutConstraints, elements } = this.props
+		return (
+			<FastCoseGraphWrapper layoutConstraints={layoutConstraints}>
+				{elements.map(element => {
+					if (element.group === 'nodes') {
+						return this.renderNode({...element.data, labelWidth: 300, labelHeight: 300});
+					} else if (element.group === 'edges') {
+						return this.renderEdge(element.data);
+					}
+				})}
+			</FastCoseGraphWrapper>
+		);
+	}
 }
+
 export default Schema;

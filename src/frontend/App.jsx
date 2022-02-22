@@ -12,7 +12,7 @@ import TreeMenu from "react-simple-tree-menu"
 
 import Schema from "./containers/Schema.jsx";
 import ExampleGraph from "./components/ExampleGraph.js";
-import { fromRawTimeline } from "./utils/Layout.js";
+import { fromRawTimeline, fromRawSummaryData } from "./utils/Layout.js";
 
 import PSPDFKit from "./components/PSPDFKit.jsx";
 
@@ -125,6 +125,28 @@ function Timeline({id}) {
 	return (
 		<Schema graph={timeline} />
 	);
+}
+
+function SummaryData({id}) {
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		if (!loading) {
+			setLoading(true)
+			getLatestAnalysis(id).then(setData)
+		}
+	}, [loading, id]);
+
+	const summaries = data?.filter(p => p.payload.type === "summary_data")
+
+	if (!summaries || summaries.length === 0) {
+		return null
+	}
+
+	return (
+		<Schema {...fromRawSummaryData(summaries[0].payload.summary)} />
+	)
 }
 
 function Map({id}) {
@@ -246,6 +268,11 @@ function Affaire({id}) {
 								<a href="replace" disabled={isAnalysisAvailable("qa")}>Auditions</a>
 							</Link>
 						</li>
+						<li>
+							<Link href={`/affaires/${id}/viz/summary`}>
+								<a href="replace" disabled={isAnalysisAvailable("summary_data")}>Visualisation de synthèse</a>
+							</Link>
+						</li>
 					</ul>
 					{selectedPath && <PSPDFKit documentUrl={`http://localhost:3001/${selectedPath}`} baseUrl={baseUrl} />}
 				</section>
@@ -314,6 +341,10 @@ function App() {
 
 			<Route path="/affaires/:id/viz/timeline">
 				{params => <Timeline id={params.id} />}
+			</Route>
+
+			<Route path="/affaires/:id/viz/summary">
+				{params => <SummaryData id={params.id} />}
 			</Route>
 
 			<Route path="/demo/schema">

@@ -79,13 +79,99 @@ function expandNodeValue(val) {
 	return nodeValue
 }
 
+function addNode(elements, nodeData) {
+	elements.push({
+		group: "nodes",
+		data: {
+			...nodeData,
+			id: nodeData.id.toString()
+		}
+	});
+}
+
+function addEdge(elements, { id, source, target }) {
+	elements.push({
+		group: "edges",
+		data: {
+			id: id ? id.toString() : `edge-${source}-${target}`,
+			source: source.toString(),
+			target: target.toString()
+		}
+	});
+}
+
+function hasElementId(elements, nodeId) {
+	return elements.some(element => element?.data?.id === nodeId.toString())
+}
+
+
+export function fromRawSummaryData(summaryData, parameters = {}) {
+	const elements = [ ];
+	const layoutConstraints = {
+		alignmentConstraint: { horizontal: [], vertical: [] },
+		relativePlacementConstraint: []
+	};
+
+	// parameters = { center: "<entity ID>" }
+	// parameters = { showOnly: "aaa" }
+	// etc.
+
+	function basicEntityNode(entity) {
+		return {
+			label: `${entity.Personne_Nom} ${entity.Personne_Prenom}, rôle: ${entity.role}`,
+			type: "person",
+			metadata: entity,
+			id: entity.id.toString()
+		};
+	}
+
+	function registerIndictee(elements, indictee) {
+		addNode(elements, basicEntityNode(indictee));
+		indictee.related_fact_ids?.filter(fact_id => hasElementId(elements, fact_id)).forEach(fact_id => addEdge(elements, { source: indictee.id, target: fact_id }));
+	}
+
+	function registerVictim(elements, victim) {
+		addNode(elements, basicEntityNode(victim));
+		victim.related_fact_ids?.filter(fact_id => hasElementId(elements, fact_id)).forEach(fact_id => addEdge(elements, { source: fact_id, target: victim.id }));
+	}
+
+	function registerFact(elements, fact) {
+		addNode(elements, {
+			label: fact.libelle ? `${fact.libelle} - ${fact.natinf}` : `${fact.natinf}`,
+			type: "fact",
+			icon: faEdit,
+			metadata: fact,
+			id: fact.id.toString()
+		});
+	}
+	console.log(summaryData);
+
+	Object.values(summaryData.facts).forEach(fact => registerFact(elements, fact));
+	Object.values(summaryData.entities.indictees).forEach(indictee => registerIndictee(elements, indictee));
+	Object.values(summaryData.entities.victims).forEach(victim => registerVictim(elements, victim));
+
+	console.log(elements);
+
+	const indicteesGroup = Object.values(summaryData.entities.indictees).map(indictee => indictee.id.toString());
+	const victimGroup = Object.values(summaryData.entities.victims).map(indictee => indictee.id.toString());
+	const factGroup = Object.values(summaryData.facts).map(fact => fact.id.toString())
+
+	layoutConstraints.alignmentConstraint.horizontal.push(indicteesGroup);
+	layoutConstraints.alignmentConstraint.horizontal.push(victimGroup);
+	layoutConstraints.alignmentConstraint.horizontal.push(factGroup);
+
+	layoutConstraints.relativePlacementConstraint.push({top: indicteesGroup[0], bottom: victimGroup[0]});
+
+	console.log(layoutConstraints);
+
+	return { elements, layoutConstraints };
+}
+
 export function fromRawTimeline(timeline) {
 	const g = new dagre.graphlib.Graph();
 
 	g.setGraph({});
 	g.setDefaultEdgeLabel(() => ({}));
-
-
 
 	Object.keys(timeline.facts).forEach(index => {
 		const fact = timeline.facts[index];

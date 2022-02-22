@@ -125,7 +125,15 @@ export default defineConfig({
 	build: {
 		manifest: true
 	},
+	esbuild: {
+		loader: 'jsx'
+	},
 	optimizeDeps: {
+		esbuildOptions: {
+			loader: {
+				'.js': 'jsx'
+			}
+		},
 		include: [
 			'react',
 			'react-dom',
