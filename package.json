@@ -22,7 +22,7 @@
     "react-leaflet": "^3.2.2",
     "react-simple-tree-menu": "^1.1.18",
     "use-image": "^1.0.8",
-    "vite": "^2.7.3",
+    "vite": "^2.7.6",
     "web-vitals": "^1.0.1",
     "wouter": "^2.8.0-alpha.1"
   },
