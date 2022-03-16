@@ -11,7 +11,7 @@ let
     projectSrc = filteredSrc;
   };
   mkTristanEnv = { copyNodeModules ? false }:
-  pkgs.npmlock2nix.shell {
+  pkgs.mkShell {
       src = filteredSrc;
       buildInputs = with pkgs; [
         # Python's backend
@@ -42,9 +42,9 @@ let
       PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium.outPath}/bin/chromium";
       # Do not symlink the initial node_modules, otherwise, it will not be possible to interactively edit the package(-lock).json.
       node_modules_mode = if copyNodeModules then "copy" else "symlink";
-      node_modules_attrs = {
-        PUPPETEER_SKIP_DOWNLOAD = "true";
-      };
+      # node_modules_attrs = {
+      #   PUPPETEER_SKIP_DOWNLOAD = "true";
+      # };
       # Use common settings.
       DJANGO_SETTINGS_MODULE = "common.settings";
       # Development shell is in debug.

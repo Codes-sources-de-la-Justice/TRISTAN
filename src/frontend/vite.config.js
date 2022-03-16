@@ -149,7 +149,8 @@ export default defineConfig({
 			'pspdfkit',
 			'react-konva',
 			'use-image',
-			'dagre'
+			'dagre',
+			'react-joyride'
 		]
 	}
 })

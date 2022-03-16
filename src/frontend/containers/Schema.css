@@ -8,7 +8,9 @@
 
 .cytoscape-react-node {
   /* background-color: #e07070; */
-  background-color: #808080;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-bottom: 3px solid #000000;
   display: block;
   width: 300px;
   padding: 10px;
@@ -17,4 +19,25 @@
 .cytoscape-react-cy-container {
   width: 100%;
   height: 1000px;
+}
+
+.node-selected {
+  border-color: blue;
+}
+
+.ghost {
+  opacity: 0.1;
+}
+
+.node-header {
+  display: flex;
+  padding: 10px 0px;
+}
+
+.flush-right {
+  margin-left: auto;
+}
+
+.flush-left {
+  margin-right: auto;
 }

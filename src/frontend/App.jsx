@@ -5,13 +5,14 @@ import React, { useState, useEffect, Fragment } from "react";
 import { Link, Route } from "wouter";
 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
-import { HeaderNav, NavItem } from "@dataesr/react-dsfr"
+import { Header, HeaderNav, NavItem } from "@dataesr/react-dsfr"
 
 //import Joyride from "react-joyride"
 import TreeMenu from "react-simple-tree-menu"
 
 import Schema from "./containers/Schema.jsx";
-import ExampleGraph from "./components/ExampleGraph.js";
+import DemoSchema from "./components/DemoSchema.jsx";
+import DemoSummary from "./components/DemoSummary.jsx";
 import { fromRawTimeline, fromRawSummaryData } from "./utils/Layout.js";
 
 import PSPDFKit from "./components/PSPDFKit.jsx";
@@ -24,12 +25,16 @@ import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
+import 'remixicon/fonts/remixicon.css';
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
 	iconRetinaUrl,
 	iconUrl,
 	shadowUrl
 });
+
+window.global = {ReactFloaterDebug: true};
 
 const baseUrl = `${window.location.protocol}//${window.location.host}/${import.meta.env.BASE_URL}`;
 console.log('baseUrl', baseUrl);
@@ -127,6 +132,28 @@ function Timeline({id}) {
 	);
 }
 
+function VizSummaryData({id}) {
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		if (!loading) {
+			setLoading(true)
+			getLatestAnalysis(id).then(setData)
+		}
+	}, [loading, id]);
+
+	const summaries = data?.filter(p => p.payload.type === "summary_data")
+
+	if (!summaries || summaries.length === 0) {
+		return null
+	}
+
+	return (
+		<Schema {...fromRawSummaryData(summaries[0].payload.summary)} />
+	)
+}
+
 function SummaryData({id}) {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -148,6 +175,7 @@ function SummaryData({id}) {
 		<Schema {...fromRawSummaryData(summaries[0].payload.summary)} />
 	)
 }
+
 
 function Map({id}) {
 	const [data, setData] = useState(null);
@@ -318,10 +346,16 @@ function Home() {
 function App() {
 	return (
 		<>
-			<HeaderNav>
-				<NavItem title="Liste des affaires"
-					asLink={<Link href="/" />} />
-			</HeaderNav>
+			{/*
+			TODO: réparer.
+			<Header>
+				<HeaderNav path="/">
+					<NavItem
+						title="Liste des affaires"
+						asLink={<Link href="/" />}
+					/>
+				</HeaderNav>
+			</Header>*/}
 
 			<Route path="/">
 				<Home />
@@ -344,11 +378,19 @@ function App() {
 			</Route>
 
 			<Route path="/affaires/:id/viz/summary">
-				{params => <SummaryData id={params.id} />}
+				{params => <VizSummaryData id={params.id} />}
 			</Route>
 
-			<Route path="/demo/schema">
-				<Schema graph={ExampleGraph} />
+			<Route path="/affaires/:id/summary">
+				{params => (<SummaryData id={params.id} />)}
+			</Route>
+
+			<Route path="/demo/schema/:key">
+				{params => (<DemoSchema databaseKey={params.key} />)}
+			</Route>
+
+			<Route path="/demo/summary/:key">
+				{params => (<DemoSummary databaseKey={params.key} />)}
 			</Route>
 		</>
 	);
