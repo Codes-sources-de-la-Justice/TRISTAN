@@ -1,18 +1,17 @@
-import TGCM_aleatoire_dense from './TGCM_aleatoire_dense.json';
-import TGCM_aleatoire_bcp_faits from './TGCM_aleatoire_bcp_faits.json';
-import TGCM_anonymise from './TGCM_anonymise.json';
-import TGCM_vanilla from './TGCM_vanilla.json';
-import TGCM_essai from './TGCM_essai.json';
-//import TGCM_chloe_1 from './TGCM_chloe_1.json';
-export const db = {
-	TGCM_aleatoire_dense,
-	TGCM_aleatoire_bcp_faits,
-	TGCM_anonymise,
-	TGCM_vanilla,
-	TGCM_essai,
-	//TGCM_chloe_1
-};
+function baseName(x) {
+	const parts = x.split('/');
+	return parts[parts.length - 1];
+}
 
+const tgcmFiles = import.meta.globEager('./tgcm/*.json');
+function processTgcmEntry([filename, json]) {
+	const baseFileName = baseName(filename);
+	return [
+		baseFileName.substr(0, baseFileName.length - 5),
+		json
+	];
+}
+export const db = Object.fromEntries(Object.entries(tgcmFiles).map(processTgcmEntry));
 
 function liftArray(e) {
 	if (Array.isArray(e)) {
@@ -25,11 +24,10 @@ function liftArray(e) {
 function getImplications(entity) {
 	const { Implications } = entity;
 	let imps = [];
-	if (Implications.Implications_Faits) {
-		imps = [...imps, ...liftArray(Implications.Implications_Faits)];
-	}
 	if (Implications.Implications_Faits?.Implication_Fait) {
 		imps = [...imps, ...liftArray(Implications.Implications_Faits.Implication_Fait)];
+	} else if (Implications.Implications_Faits) {
+		imps = [...imps, ...liftArray(Implications.Implications_Faits)];
 	}
 	return imps;
 }

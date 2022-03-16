@@ -7,6 +7,8 @@ import { Link, Route } from "wouter";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import { Header, HeaderNav, NavItem } from "@dataesr/react-dsfr"
 
+import { db } from './static/index.js';
+
 //import Joyride from "react-joyride"
 import TreeMenu from "react-simple-tree-menu"
 
@@ -343,6 +345,25 @@ function Home() {
   );
 }
 
+function Demo() {
+	return (
+		<main>
+			<h1 className="App">Démonstration de TRISTAN</h1>
+
+			<section className="Affaires">
+				{Object.entries(db).map(([key, json]) => {
+					return (
+						<Fragment key={key}>
+							<a href={`/demo/summary/${key}`}>Visualisation de synthèse: {key}</a>
+							<a href={`/demo/schema/${key}`}>Schéma de synthèse: {key}</a>
+						</Fragment>
+					);
+				})}
+			</section>
+		</main>
+	);
+}
+
 function App() {
 	return (
 		<>
@@ -383,6 +404,10 @@ function App() {
 
 			<Route path="/affaires/:id/summary">
 				{params => (<SummaryData id={params.id} />)}
+			</Route>
+
+			<Route path="/demo">
+				<Demo />
 			</Route>
 
 			<Route path="/demo/schema/:key">
