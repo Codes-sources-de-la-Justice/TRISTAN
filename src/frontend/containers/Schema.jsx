@@ -147,9 +147,6 @@ function EdgeController({cy, id, style}) {
 class GenericNode extends CyReact.Node {
 	constructor(props) {
 		super(props);
-		this.state = {
-			selected: false
-		}
 	}
 
 	renderPerson() {
@@ -194,23 +191,15 @@ class GenericNode extends CyReact.Node {
 		);
 	}
 	render() {
-		const { type, ghost } = this.props
-		const { selected } = this.state
-
+		const { type, ghost, selected } = this.props
 		const renderFunction = this[`render${wordToTitleCase(type)}`] || this.renderGeneric;
 
 		const onClick = evt => {
-			this.setState(state => {
-				if (!state.selected && this.props.onSelect) {
-					this.props.onSelect(this.props, evt);
-				} else if (state.selected && this.props.onUnselect) {
-					this.props.onUnselect(this.props, evt);
-				}
-
-				return {
-					selected: !state.selected
-				};
-			});
+			if (this.props.onSelect) {
+				this.props.onSelect(this.props, evt);
+			} else if (this.props.onUnselect) {
+				this.props.onUnselect(this.props, evt);
+			}
 		};
 
 		const classNames = [ "cytoscape-react-node" ];
@@ -231,11 +220,23 @@ class GenericNode extends CyReact.Node {
 }
 
 class Schema extends React.Component {
-	renderNode(node, onSelect, onUnselect, ghost) {
+	constructor(props) {
+		super(props);
+		this.state = {
+			drag: false
+		};
+		this.wrapperRef = React.createRef();
+		this.handleOutsideClick = this.handleOutsideClick.bind(this);
+
+		this.handleEnableDrag = () => this.setState({drag: true});
+		this.handleDisableDrag = () => this.setState({drag: false});
+	}
+
+	renderNode(node, onSelect, onUnselect, ghost, selected) {
 		const { id } = node
 		return (
 			<CyReact.NodeWrapper key={id} id={id}>
-				<GenericNode {...node} onSelect={node.onSelect || onSelect} onUnselect={node.onUnselect || onUnselect} ghost={ghost} />
+				<GenericNode {...node} onSelect={node.onSelect || onSelect} onUnselect={node.onUnselect || onUnselect} ghost={ghost} selected={selected} />
 			</CyReact.NodeWrapper>
 		);
 	}
@@ -249,21 +250,41 @@ class Schema extends React.Component {
 		);
 	}
 
+	componentDidMount() {
+		document.addEventListener('mousedown', this.handleOutsideClick);
+		document.addEventListener('mousemove', this.handleEnableDrag);
+		document.addEventListener('mouseup', this.handleDisableDrag);
+	}
+
+	componentWillUnmount() {
+		document.removeEventListener('mousedown', this.handleOutsideClick);
+		document.removeEventListener('mousemove', this.handleEnableDrag);
+		document.removeEventListener('mouseup', this.handleDisableDrag);
+	}
+
+	handleOutsideClick(evt) {
+		if (evt.target.nodeName === 'CANVAS' && !this.state.drag) {
+			this.props.onOutClick();
+		}
+	}
+
 	render() {
-		const { layoutConstraints, elements, onSelect, onUnselect, layoutParameters, ghostIds } = this.props
+		const { layoutConstraints, elements, onSelect, onUnselect, layoutParameters, ghostIds, selectedIds } = this.props
 
 		return (
-			<FastCoseGraphWrapper layoutConstraints={layoutConstraints} {...(layoutParameters || {})}>
-				{elements.map(element => {
-					if (element.group === 'nodes') {
-						return this.renderNode({...element.data, labelWidth: 300, labelHeight: 300}, onSelect, onUnselect, (ghostIds || []).includes(element.data.id));
-					} else if (element.group === 'edges') {
-						return this.renderEdge(element.data,
-							(ghostIds || []).includes(element.data.source) ||
-							(ghostIds || []).includes(element.data.target));
-					}
-				})}
-			</FastCoseGraphWrapper>
+			<div ref={this.wrappedRef}>
+				<FastCoseGraphWrapper layoutConstraints={layoutConstraints} {...(layoutParameters || {})}>
+					{elements.map(element => {
+						if (element.group === 'nodes') {
+							return this.renderNode({...element.data, labelWidth: 300, labelHeight: 300}, onSelect, onUnselect, (ghostIds || []).includes(element.data.id), (selectedIds || []).includes(element.data.id));
+						} else if (element.group === 'edges') {
+							return this.renderEdge(element.data,
+								(ghostIds || []).includes(element.data.source) ||
+								(ghostIds || []).includes(element.data.target));
+						}
+					})}
+				</FastCoseGraphWrapper>
+			</div>
 		);
 	}
 }

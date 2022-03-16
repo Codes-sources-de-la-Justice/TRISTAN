@@ -1,8 +1,27 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import Schema from '../containers/Schema.jsx';
 import { toBackendPayload, toGraph, db, getClosedNeighborWithDepth } from '../static';
 import { Select } from '@dataesr/react-dsfr';
 import './DemoSchema.css';
+
+function useOnClickOutside(ref, callback) {
+  useEffect(() => {
+    /**
+     * Alert if clicked on outside of element
+     */
+    function handleClickOutside(event) {
+      if (ref.current && !ref.current.contains(event.target)) {
+				callback();
+      }
+    }
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref]);
+}
 
 function getEntity(id, elements) {
 	return elements.find(item => item.data.id === id);
@@ -222,7 +241,7 @@ function DemoSchema({databaseKey}) {
 
 	const getProperNeigh = node => {
 		const [_, neigh] = getClosedNeighborWithDepth(node.id,
-			summaryData.elements, 3);
+			summaryData.elements, 2);
 
 		return Array.from(neigh);
 	};
@@ -242,6 +261,10 @@ function DemoSchema({databaseKey}) {
 		setSelection(selection.filter(n => n.id !== node.id));
 	});
 
+	const onOutClick = () => {
+		setSelection([]);
+	}
+
 	return (
 	<div>
 		<DebugBarLayout
@@ -257,7 +280,9 @@ function DemoSchema({databaseKey}) {
 			layoutParameters={layoutParameters}
 			onSelect={onSelect}
 			onUnselect={onUnselect}
+			onOutClick={onOutClick}
 			ghostIds={ghostIds}
+			selectedIds={selection.map(n => n.id)}
 		/>
 	</div>
 	);
