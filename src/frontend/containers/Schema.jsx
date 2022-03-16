@@ -147,6 +147,11 @@ function EdgeController({cy, id, style}) {
 class GenericNode extends CyReact.Node {
 	constructor(props) {
 		super(props);
+
+		this.state = { drag: false };
+
+		this.handleEnableDrag = () => this.setState({drag: true});
+		this.handleDisableDrag = () => this.setState({drag: false});
 	}
 
 	renderPerson() {
@@ -195,9 +200,11 @@ class GenericNode extends CyReact.Node {
 		const renderFunction = this[`render${wordToTitleCase(type)}`] || this.renderGeneric;
 
 		const onClick = evt => {
-			if (this.props.onSelect) {
+			if (this.props.onSelect && !this.state.drag && !selected) {
 				this.props.onSelect(this.props, evt);
-			} else if (this.props.onUnselect) {
+			} 
+
+			if (this.props.onUnselect && !this.state.drag && selected) {
 				this.props.onUnselect(this.props, evt);
 			}
 		};
@@ -213,7 +220,11 @@ class GenericNode extends CyReact.Node {
 		}
 
 		return (
-		<div className={classNames.join(' ')} onClick={onClick}>
+		<div
+			className={classNames.join(' ')}
+			onMouseUp={onClick}
+			onMouseMove={this.handleEnableDrag}
+			onMouseDown={this.handleDisableDrag}>
 			{renderFunction.call(this)}
 		</div>);
 	}
