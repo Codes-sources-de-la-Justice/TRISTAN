@@ -171,7 +171,7 @@ function Summary({summary: {entities, facts, general}, elements}) {
 	const handleClose = useCallback(() => selectEntity(null));
 
 	const [preferredIds, setPreferredIds] = useState([]);
-	const hiddenIds = preferredIds.length > 0 ? [...entities, facts].flatMap(a => a.filter(n => !preferredIds.includes(n.Global_Id)).map(n => n.Global_Id)) : [];
+	const hiddenIds = preferredIds.length > 0 ? [...Object.values(entities), facts].flatMap(a => a.filter(n => !preferredIds.includes(n.Global_Id)).map(n => n.Global_Id)) : [];
 
 	const handleEntityClick = entity => {
 		selectEntity(entity);
