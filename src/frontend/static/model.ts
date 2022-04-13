@@ -13,7 +13,7 @@ type XMLLeafWithAttrs<Id, Ref, TextType> = {
   "#text": TextType;
 };
 
-type LawArticle = {
+export type LawArticle = {
   Valeur: string;
   Lien: string;
 };
@@ -82,6 +82,7 @@ export type Involvement = FactInvolvement | LegalRepresentativeInvolvement;
 
 export interface Person {
   CP_Commune_Naissance: number;
+  Naissance_Date: string;
   Naissance_Lieu: string;
   Insee_Lieu_Naiss: number;
   Pays_Naissance: Country;
@@ -129,7 +130,8 @@ export interface Person {
     };
   };
 }
-type GeneralInformation = {
+
+export type GeneralInformation = {
   Jonction: boolean;
   Depaysement: boolean;
   Scelles: boolean;
@@ -154,12 +156,15 @@ export type PersonWithGenericRole = Person & {
   role: PersonRole;
 };
 
-export type BackendAnalysis = {
-  facts: Array<Fact>;
+export interface PersonEntityPartition {
   victims: PersonWithRole<PersonRole.Victim>;
   witnesses: PersonWithRole<PersonRole.Witness>;
   indictees: PersonWithRole<PersonRole.Indictee>;
   others: PersonWithRole<PersonRole.Other>;
+};
+
+export type BackendAnalysis = PersonEntityPartition & {
+  facts: Array<Fact>;
   general: GeneralInformation;
 };
 
