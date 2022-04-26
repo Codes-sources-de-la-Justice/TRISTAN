@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite'
-//import react from '@vitejs/plugin-react'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import react from '@vitejs/plugin-react'
+//import reactRefresh from '@vitejs/plugin-react-refresh'
 
 import { stat, readdir, readFile } from 'fs/promises'
-import { join, basename, dirname, normalize } from 'path'
+import { resolve, join, basename, dirname, normalize } from 'path'
 import send from 'send'
 import parseUrl from 'parseurl'
 
@@ -113,7 +113,7 @@ export function patchReactFloater() {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [reactRefresh(), loadPSPDFKit()],
+	plugins: [react(), loadPSPDFKit()],
 	cacheDir: '.cache/vite',
 	publicDir: "assets",
 	server: {
@@ -123,15 +123,20 @@ export default defineConfig({
 		cors: true
 	},
 	build: {
-		manifest: true
+		manifest: true,
+		lib: {
+			entry: resolve(__dirname, 'lib/main.tsx'),
+			name: 'TRISTAN',
+			fileName: format => `tristan.${format}.js`
+		}
 	},
 	esbuild: {
-		loader: 'jsx'
+		loader: 'tsx'
 	},
 	optimizeDeps: {
 		esbuildOptions: {
 			loader: {
-				'.js': 'jsx'
+				'.js': 'tsx'
 			}
 		},
 		include: [
