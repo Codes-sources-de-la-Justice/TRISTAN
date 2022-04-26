@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import Schema from '../containers/Schema.jsx';
-import { toBackendPayload, toGraph, db, getClosedNeighborWithDepth } from '../static';
+import Schema from '../containers/Schema';
+import { toBackendPayload, toGraph, getClosedNeighborWithDepth } from '../static';
+import { db } from '../static/db';
 import { Select } from '@dataesr/react-dsfr';
 import './DemoSchema.css';
 
