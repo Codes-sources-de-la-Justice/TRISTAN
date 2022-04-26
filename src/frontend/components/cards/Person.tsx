@@ -5,7 +5,7 @@ import { EntityCardProps, EntityCard, EntityHeader } from "./Entity";
 import UserIcon from "remixicon-react/UserLineIcon";
 import { Badge } from "@dataesr/react-dsfr";
 
-import { Person, PersonRole, PersonWithGenericRole } from "static/model";
+import { Person, PersonRole, PersonWithGenericRole } from "../../static/model";
 
 type PersonCardProps = EntityCardProps & {
   entity: PersonWithGenericRole;
