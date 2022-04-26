@@ -1,21 +1,14 @@
 import { multipartition } from "./utils";
-import {
-  Person,
-  Fact,
-  PersonRole,
-  PersonWithGenericRole,
-  RawAnalysis,
-  BackendAnalysis,
-  getFactImplications,
-  GraphAnalysis,
-  LayoutConstraints,
-} from "./model";
-import {
+import { getFactImplications, PersonRole } from "./model";
+import { match } from "ts-pattern";
+
+import type { Person, Fact, PersonWithGenericRole, RawAnalysis, BackendAnalysis, GraphAnalysis, LayoutConstraints } from "./model";
+import type {
   ElementDefinition,
   NodeDataDefinition,
   EdgeDataDefinition,
 } from "cytoscape";
-import { match } from "ts-pattern";
+
 
 function mapRoleFromPerson(person: Person): PersonRole[] {
   return getFactImplications(person).map((imp) => imp.Implication);
