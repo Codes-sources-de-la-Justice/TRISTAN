@@ -4,6 +4,9 @@ let
       pdftotext = super.pdftotext.overridePythonAttrs (old: {
         buildInputs = (old.buildInputs or []) ++ [ pkg-config poppler ];
       });
+      celery = super.celery.overridePythonAttrs (old: {
+        propagatedBuildInputs = (old.propagatedBuildInputs or [ ]) ++ [ self.setuptools ];
+      });
     });
 in
   {
