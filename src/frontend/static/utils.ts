@@ -26,6 +26,6 @@ export function multipartition<Item>(
 
   // Convert all Array-like objects to proper Array.
   return Object.fromEntries(
-    Object.entries(partitions).map(([k, v]) => [k, Array.from(v)])
+    Array.from(partitions.entries()).map(([k, v]) => [k, Array.from(v)])
   );
 }
