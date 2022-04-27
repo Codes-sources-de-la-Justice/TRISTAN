@@ -1,16 +1,18 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, ChangeEventHandler, ChangeEvent } from 'react';
 import Schema from '../containers/Schema';
 import { toBackendPayload, toGraph, getClosedNeighborWithDepth } from '../static';
 import { db } from '../static/db';
 import { Select } from '@dataesr/react-dsfr';
+import Cytoscape, {LayoutOptions} from 'cytoscape';
 import './DemoSchema.css';
+import {LayoutConstraints} from 'static/model';
 
-function useOnClickOutside(ref, callback) {
+function useOnClickOutside<T>(ref: React.RefObject<T>, callback: () => void) {
   useEffect(() => {
     /**
      * Alert if clicked on outside of element
      */
-    function handleClickOutside(event) {
+		function handleClickOutside(event: Event) {
       if (ref.current && !ref.current.contains(event.target)) {
 				callback();
       }
@@ -24,11 +26,11 @@ function useOnClickOutside(ref, callback) {
   }, [ref]);
 }
 
-function getEntity(id, elements) {
+function getEntity(id: string, elements: Cytoscape.ElementDefinition[]) {
 	return elements.find(item => item.data.id === id);
 }
 
-function showName(e) {
+function showName(e?: Cytoscape.ElementDefinition | null): string {
 	if (!e) return "entité non trouvée";
 
 	if (e.data.type === 'person') {
@@ -40,14 +42,14 @@ function showName(e) {
 	}
 }
 
-function viewName(id, elements) {
+function viewName(id: string, elements: Cytoscape.ElementDefinition[]): string {
 	const e = getEntity(id, elements);
 
 	return showName(e);
 }
 
-function NodeSelect({nodes, value, onSelect}) {
-	const onChange = evt => {
+function NodeSelect({nodes, value, onSelect}: { nodes: Cytoscape.NodeDefinition[], value: any, onSelect: (selected: string) => void }) {
+	const onChange = (evt: ChangeEvent<HTMLSelectElement>) => {
 		onSelect(evt.target.value);
 	};
 	const options = nodes.map(node => ({
@@ -64,7 +66,12 @@ function NodeSelect({nodes, value, onSelect}) {
 	);
 }
 
-function FixedPlacementNodeInput({nodes, onAdd}) {
+type ConstraintInputProps = {
+	nodes: Cytoscape.NodeDefinition[];
+	onAdd: (n: Cytoscape.NodeDefinition, x: number, y: number) => void;
+};
+
+function FixedPlacementNodeInput({nodes, onAdd} : ConstraintInputProps) {
 	const [state, setState] = useState({node: nodes[0], x: 113, y: -84});
 
 	return (
@@ -79,7 +86,7 @@ function FixedPlacementNodeInput({nodes, onAdd}) {
 	);
 }
 
-function RelativePlacementConstraintInput({nodes, onAdd}) {
+function RelativePlacementConstraintInput({nodes, onAdd}: ConstraintInputProps) {
 	const [state, setState] = useState({u: nodes[0], v: nodes[0], direction: 'left-right', gap: null});
 
 	return (
@@ -92,7 +99,12 @@ function RelativePlacementConstraintInput({nodes, onAdd}) {
 	);
 }
 
-function ConstraintList({constraints: { alignmentConstraint, relativePlacementConstraint }, nodes}) {
+type ConstraintListProps = {
+	nodes: Cytoscape.NodeDefinition[];
+	constraints: LayoutConstraints;
+};
+
+function ConstraintList({constraints: { alignmentConstraint, relativePlacementConstraint }, nodes}: ConstraintListProps) {
 	const { horizontal, vertical } = alignmentConstraint || {}
 	const showAlignmentConstraint = nature => cs => {
 		return (cs || []).map((css, index) => {
@@ -130,9 +142,16 @@ function ConstraintList({constraints: { alignmentConstraint, relativePlacementCo
 		</table>
 	);
 }
-				
 
-function DebugBarLayout({onChangeConstraints, onChangeLayout, constraints, elements, layoutParameters}) {
+type DebugBarLayoutProps = {
+	onChangeConstraints: (constraints: LayoutConstraints) => void;
+	onChangeLayout: () => void;
+	constraints: LayoutConstraints;
+	elements: Cytoscape.ElementDefinition[];
+	layoutParameters: any;
+};
+
+function DebugBarLayout({onChangeConstraints, onChangeLayout, constraints, elements, layoutParameters}: DebugBarLayoutProps) {
 	const { alignmentConstraint, relativePlacementConstraint } = constraints;
 	const { constantEdgeElasticity, nodeRepulsion, nodeSeparation, idealEdgeLength } = layoutParameters
 	const alignAllType = (type, extra={}) => evt => {
@@ -142,17 +161,17 @@ function DebugBarLayout({onChangeConstraints, onChangeLayout, constraints, eleme
 			.filter(item => item.data.type === type && Object.entries(extra).every(([key, value]) => item.data[key] === value))
 			.map(item => item.data.id);
 
-		const isGroupType = (constraints, type, extra) => {
+		const isGroupType = (constraints: string[], type: string, extra: any) => {
 			return constraints.every(id => {
 				const elt = elements.find(item => item.data.id === id);
 
-				return elt.data.type === type && Object.entries(extra).every(([key, value]) => elt.data[key] === value)
+				return elt?.data.type === type && Object.entries(extra).every(([key, value]) => elt?.data[key] === value)
 			});
 		};
 
 		onChangeConstraints({
 			alignmentConstraint: {
-				horizontal: ([...(alignmentConstraint.horizontal || []), newConstraint]).filter(cs => evt.target.checked || !isGroupType(cs, type, extra))
+				horizontal: ([...(alignmentConstraint?.horizontal || []), newConstraint]).filter(cs => evt.target.checked || !isGroupType(cs, type, extra))
 			},
 			relativePlacementConstraint
 		});
@@ -176,8 +195,8 @@ function DebugBarLayout({onChangeConstraints, onChangeLayout, constraints, eleme
 		onChangeConstraints({
 			...constraints,
 			alignmentConstraint: {
-				horizontal: alignmentConstraint.vertical || [],
-				vertical: alignmentConstraint.horizontal || []
+				horizontal: alignmentConstraint?.vertical ?? [],
+				vertical: alignmentConstraint?.horizontal ?? []
 			}
 		})
 	}
@@ -227,7 +246,7 @@ function DebugBarLayout({onChangeConstraints, onChangeLayout, constraints, eleme
 	);
 }
 
-function DemoSchema({databaseKey}) {
+function DemoSchema({databaseKey}: { databaseKey: string }) {
 	const payload = toBackendPayload(db[databaseKey]);
 	const summaryData = toGraph(payload);
 	const initialLayoutConstraints = summaryData.layoutConstraints;
@@ -240,7 +259,7 @@ function DemoSchema({databaseKey}) {
 		constantEdgeElasticity: 0.1
 	});
 
-	const getProperNeigh = node => {
+	const getProperNeigh = (node: cytoscape.NodeDataDefinition) => {
 		const [_, neigh] = getClosedNeighborWithDepth(node.id,
 			summaryData.elements, 2);
 
