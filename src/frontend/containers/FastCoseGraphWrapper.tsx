@@ -5,10 +5,10 @@ import {LayoutConstraints} from 'static/model';
 
 cytoscape.use(fcose);
 
-const debounce = (func, delay, { leading } = {}) => {
-  let timerId
+function debounce<F extends (...params: any[]) => void>(func: F, delay: number, { leading }: { leading?: boolean } = {}) {
+	let timerId: number
 
-  return (...args) => {
+	return (...args: any[]) => {
     if (!timerId && leading) {
       func(...args)
     }
@@ -26,20 +26,32 @@ type FastCoseGraphWrapperProps = {
 	layoutConstraints: LayoutConstraints;
 };
 
+type FastCoseLayoutParameters = FastCoseGraphWrapperProps & {};
+
 export default class FastCoseGraphWrapper extends CyReact.GraphWrapper {
+	_debounced_layout: (params: FastCoseLayoutParameters) => void;
+	_layout?: cytoscape.Layouts;
+	_cy?: cytoscape.Core;
+
 	constructor(props: FastCoseGraphWrapperProps) {
 			super(props);
+
 			this._debounced_layout = debounce(params => {
+				if (!this._cy) {
+					console.error('[FastCoseGraphWrapper] Cytoscape instance is not defined, layout cannot be computed!');
+					return;
+				}
+
 				this._layout = this._cy.layout(
 				{'name': 'fcose', 
 					...params.layoutConstraints,
 					nodeDimensionsIncludeLabels: true,
 					randomize: true,
 					//quality: "proof",
-					edgeElasticity: edge => params.constantEdgeElasticity || 0.00000001,
-					nodeRepulsion: node => params.nodeRepulsion || 0,
+					edgeElasticity: (_: cytoscape.EdgeDefinition) => params.constantEdgeElasticity || 0.00000001,
+					nodeRepulsion: (_: cytoscape.NodeDefinition) => params.nodeRepulsion || 0,
 					nodeSeparation: params.nodeSeparation || 1000,
-					idealEdgeLength: edge => params.idealEdgeLength || 100,
+					idealEdgeLength: (_: cytoscape.EdgeDefinition) => params.idealEdgeLength || 100,
 				});
 				this._layout.run();
 			}, 10, {leading: true});
@@ -54,13 +66,11 @@ export default class FastCoseGraphWrapper extends CyReact.GraphWrapper {
         this._debounced_layout(Object.assign({}, params, this.props));
     }
 
-    cyReady (cy) {
+		cyReady (cy: cytoscape.Core) {
       this._cy = cy;
-			window._cy = cy;
-			window.rerun_layout = () => this.layout();
     }
 
-		componentDidUpdate(prevProps: FastCoseGraphWrapperProps, prevState, snapshot) {
+		componentDidUpdate(prevProps: FastCoseGraphWrapperProps) {
 			const layoutKeys = [ "constantEdgeElasticity",
 				"nodeRepulsion",
 				"nodeSeparation",

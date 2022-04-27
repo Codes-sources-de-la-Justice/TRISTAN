@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, MouseEvent, CSSProperties, MouseEventHandler } from "react";
 // @ts-ignore
 import CyReact from 'cytoscape-react';
 import Cytoscape from 'cytoscape';
@@ -11,16 +11,10 @@ function wordToTitleCase(str: string) {
 	return str[0].toUpperCase() + str.substring(1);
 }
 
-function deriveAgeFromDOB(dob: string) {
-	const [day, month, year] = dob.split("/");
-	const msDelta = new Date() - new Date(year, month, day);
-	return Math.floor(msDelta / (1000 * 3600 * 24 * 365));
-}
-
 type EdgeControllerProps = {
-	cy: any;
+	cy: Cytoscape.Core;
 	id: string;
-	style: string;
+	style: CSSProperties;
 };
 
 function EdgeController({cy, id, style}: EdgeControllerProps) {
@@ -47,7 +41,7 @@ type GenericNodeState = {
 	drag: boolean;
 };
 
-function useDrag(initialValue) {
+function useDrag(initialValue: boolean) {
 	const [drag, setDrag] = useState(initialValue);
 
 	return {
@@ -59,10 +53,10 @@ function useDrag(initialValue) {
 
 function GenericNode(props: GenericNodeProps) {
 	const { drag, handleEnableDrag, handleDisableDrag } = useDrag(false);
-	const { type, ghost, selected } = this.props
-	const renderFunction = this[`render${wordToTitleCase(type)}`] || this.renderGeneric;
+	const { type, ghost, selected } = props
+	const renderFunction = () => {}; // this[`render${wordToTitleCase(type)}`] || this.renderGeneric;
 
-	const onClick = evt => {
+	const onClick = (evt: MouseEvent) => {
 		if (props.onSelect && !drag && !selected) {
 			props.onSelect(props, evt);
 		} 
@@ -94,23 +88,33 @@ function GenericNode(props: GenericNodeProps) {
 
 type SchemaProps = {
 	layoutConstraints: any;
-	elements: any;
-	onSelect: any;
-	onUnselect: any;
+	elements: Cytoscape.ElementDefinition[];
+	onSelect: MouseEventHandler;
+	onUnselect: MouseEventHandler;
 	layoutParameters: any;
-	ghostIds: any;
-	selectedIds: any;
+	ghostIds: string[];
+	selectedIds: string[];
+	onOutClick: () => void;
 };
 
 type SchemaState = {
 	drag: boolean;
 };
 
+function isNode(node: Cytoscape.ElementDefinition): node is Cytoscape.NodeDefinition {
+	return node.group === 'nodes';
+}
+
+function isEdge(node: Cytoscape.ElementDefinition): node is Cytoscape.EdgeDefinition {
+	return node.group === 'edges';
+}
+
+
 class Schema extends React.Component<SchemaProps, SchemaState> {
 	state: SchemaState = {
 		drag: false
 	};
-	wrapperRef: React.RefObject<{}>;
+	wrapperRef: React.RefObject<HTMLDivElement>;
 	handleEnableDrag: () => void;
 	handleDisableDrag: () => void;
 
@@ -124,7 +128,7 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 		this.handleDisableDrag = () => this.setState({drag: false});
 	}
 
-	renderNode(node, onSelect, onUnselect, ghost, selected) {
+	renderNode(node: Cytoscape.NodeDataDefinition, onSelect: MouseEventHandler, onUnselect: MouseEventHandler, ghost: boolean, selected: boolean) {
 		const { id } = node
 		return (
 			<CyReact.NodeWrapper key={id} id={id}>
@@ -133,11 +137,11 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 		);
 	}
 
-	renderEdge({source, target, id}, ghost) {
+	renderEdge({source, target, id}: Cytoscape.EdgeDataDefinition, ghost: boolean) {
 		return (
 			<CyReact.EdgeWrapper className='' key={id} id={id} source={source} target={target} canvasClassName=''>
-				<EdgeController style={
-					{ opacity: ghost ? 0.1 : 1 }} />
+				<EdgeController
+					style={{ opacity: ghost ? 0.1 : 1 }} />
 			</CyReact.EdgeWrapper>
 		);
 	}
@@ -164,12 +168,19 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 		const { layoutConstraints, elements, onSelect, onUnselect, layoutParameters, ghostIds, selectedIds } = this.props
 
 		return (
-			<div ref={this.wrappedRef}>
+			<div ref={this.wrapperRef}>
 				<FastCoseGraphWrapper layoutConstraints={layoutConstraints} {...(layoutParameters || {})}>
 					{elements.map(element => {
-						if (element.group === 'nodes') {
-							return this.renderNode({...element.data, labelWidth: 300, labelHeight: 300}, onSelect, onUnselect, (ghostIds || []).includes(element.data.id), (selectedIds || []).includes(element.data.id));
-						} else if (element.group === 'edges') {
+						if (isNode(element)) {
+							if (!element.data.id) return null;
+							return this.renderNode(
+								{...element.data, labelWidth: 300, labelHeight: 300},
+								onSelect,
+								onUnselect,
+								(ghostIds || []).includes(element.data.id),
+								(selectedIds || []).includes(element.data.id)
+							);
+						} else if (isEdge(element)) {
 							return this.renderEdge(element.data,
 								(ghostIds || []).includes(element.data.source) ||
 								(ghostIds || []).includes(element.data.target));

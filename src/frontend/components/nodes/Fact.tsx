@@ -1,7 +1,8 @@
 import React from 'react';
 import { Badge } from '@dataesr/react-dsfr';
+import {Fact} from 'static/model';
 
-function FactNode({fact}) {
+export function FactNode({fact}: { fact: Fact }) {
 		return (
 			<>
 				<div className="node-header">

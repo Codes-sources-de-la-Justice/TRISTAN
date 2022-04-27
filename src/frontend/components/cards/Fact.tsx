@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback } from "react";
+import React, { Fragment, ReactNode, useCallback } from "react";
 
 import MapPinIcon from "remixicon-react/MapPinLineIcon";
 import TimeIcon from "remixicon-react/TimeLineIcon";
@@ -6,11 +6,9 @@ import TimeIcon from "remixicon-react/TimeLineIcon";
 import { EntityCard, EntityCardProps, EntityHeader } from "./Entity";
 import { Badge } from "@dataesr/react-dsfr";
 import { Fact, LawArticle } from "static/model";
+import {GridComponentProps} from "./Grid";
 
-type FactCardProps = EntityCardProps & {
-  entity: Fact;
-  onClick: (entity: Fact) => void;
-};
+type FactCardProps = GridComponentProps<Fact>;
 
 type FactInfoProps = {
   fact: Fact;
@@ -24,12 +22,14 @@ type ListOfLinksProps = {
 
 function ListOfLinks({ list, empty = null }: ListOfLinksProps) {
   if (!list || !list.map) return empty;
+
   return (
-    <>
+    <Fragment>
       {list
-        .map(({ Lien, Valeur }) => <a href={Lien}>{Valeur}</a>)
-        .reduce((prev, cur) => [prev, ", ", cur])}
-    </>
+        .map(({ Lien, Valeur }) => <a key={Lien} href={Lien}>{Valeur}</a>)
+        .join(', ')
+      }
+    </Fragment>
   );
 }
 
@@ -54,20 +54,20 @@ export function FactInfo({ fact, level = 1 }: FactInfoProps) {
       {level >= 2 && (
         <>
           <p>
-            Pour s'être trouvé à {fact.Libelle_Magistrat.Lieux.Lieu},{" "}
+            Pour s'être trouvé à {fact.Libelle_Magistrat.Lieux[0].Lieu},{" "}
             {fact.Libelle_Magistrat.Explication}{" "}
           </p>
           <p>
             Faits prévus par:{" "}
             <ListOfLinks
-              list={fact.Libelle_Magistrat.Articles_Prevus.Article}
+              list={fact.Libelle_Magistrat.Articles_Prevus}
               empty={"aucun spécifié"}
             />{" "}
           </p>
           <p>
             Faits réprimés par:{" "}
             <ListOfLinks
-              list={fact.Libelle_Magistrat.Articles_Reprimes.Article}
+              list={fact.Libelle_Magistrat.Articles_Reprimes}
               empty={"aucun spécifié"}
             />{" "}
           </p>

@@ -1,10 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, MouseEventHandler } from "react";
 
+// TODO: Refactor entity type definition somewhere else.
+import type { Entity } from "../components/cards/Grid";
 import { getClosedNeighborWithDepth } from "../static";
 import Joyride from "react-joyride";
 
-import { FactInfo } from '../components/cards/Fact';
-import { PersonInfo } from '../components/cards/Person';
+import { Tag } from '@dataesr/react-dsfr';
+
+import { FactInfo } from "../components/cards/Fact";
+import { PersonInfo } from "../components/cards/Person";
 import { FactCard, GridCard, PersonCard } from "../components/cards";
 
 import "./Summary.css";
@@ -20,12 +24,22 @@ type SummaryProps = {
   elements: ElementDefinition[];
 };
 
-function Sidebar({ open, entity, onClose }) {
-  if (!open) return null;
+type SidebarProps = {
+  open: boolean;
+  entity: Entity | null;
+  onClose: MouseEventHandler<HTMLButtonElement>;
+};
 
-  const entityType = entity.Natinf != null ? "fact" : "person";
+function isFact(entity: Entity): entity is Fact {
+  return (entity as Fact).Natinf !== undefined;
+}
+
+function Sidebar({ open, entity, onClose }: SidebarProps) {
+  if (!open) return null;
+  if (!entity) return null;
+
   const entityInfo =
-    entityType === "fact" ? (
+    isFact(entity) ? (
       <FactInfo fact={entity} level={2} />
     ) : (
       <PersonInfo person={entity} level={2} />
@@ -39,11 +53,17 @@ function Sidebar({ open, entity, onClose }) {
   );
 }
 
+type GeneralInfoProps = {
+  general: GeneralInformation;
+  entities: PersonEntityPartition;
+  facts: Fact[];
+};
+
 function GeneralInfo({
   general: { Jonction, Depaysement, Scelles },
   entities: { victims, indictees },
   facts,
-}) {
+}: GeneralInfoProps) {
   // S'il existe un mineur, le montrer
   // Calculer atteintes aux biens -> NATAF?
   return (
@@ -55,25 +75,24 @@ function GeneralInfo({
   );
 }
 
-
 function Summary({
   summary: { entities, facts, general },
   elements,
 }: SummaryProps) {
-  const [selectedEntity, selectEntity] = useState(null);
-  const handleClose = useCallback(() => selectEntity(null));
+  const [selectedEntity, selectEntity] = useState<Entity | null>(null);
+  const handleClose = () => selectEntity(null);
 
-  const [preferredIds, setPreferredIds] = useState([]);
+  const [preferredIds, setPreferredIds] = useState<number[]>([]);
   const hiddenIds =
     preferredIds.length > 0
-      ? [...Object.values(entities), facts].flatMap((a) =>
+      ? ([...Object.values(entities), facts] as Entity[][]).flatMap((a) =>
           a
             .filter((n) => !preferredIds.includes(n.Global_Id))
             .map((n) => n.Global_Id)
         )
       : [];
 
-  const handleEntityClick = (entity) => {
+  const handleEntityClick = (entity: Entity) => {
     selectEntity(entity);
 
     if (Object.is(selectedEntity, entity) && preferredIds.length > 0) {
@@ -124,7 +143,7 @@ function Summary({
         <div className="summary-header">
           <h1>Procédure</h1>
           <div className="summary-header__tags">
-            <GeneralInfo entities={entities} general={general} />
+            <GeneralInfo entities={entities} general={general} facts={facts} />
           </div>
         </div>
         <div className="summary-body">

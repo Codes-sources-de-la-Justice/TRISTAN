@@ -1,15 +1,20 @@
 import React, { JSXElementConstructor } from "react";
 import { Fact, PersonWithGenericRole } from "static/model";
-import { EntityCardProps } from "./Entity";
 
 // TODO: hiddenIds should be a Map
 // TODO: onClick type confusion is a code smell.
 
-type Entity = PersonWithGenericRole | Fact;
+export type Entity = PersonWithGenericRole | Fact;
+
+export type GridComponentProps<T> = {
+  entity: Entity & T;
+  hidden: boolean;
+  selected: boolean;
+  onClick: (entity: Entity & T) => void;
+};
+
 type GridCardProps = {
-  Component: JSXElementConstructor<
-    EntityCardProps & { entity: Entity; onClick: (entity: Entity) => void }
-  >;
+  Component: JSXElementConstructor<GridComponentProps>;
   entities: Entity[];
   onClick: (entity: Entity) => void;
   hiddenIds: number[];

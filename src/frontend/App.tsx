@@ -9,8 +9,8 @@ import { db } from './static/db.js';
 
 //import Joyride from "react-joyride"
 
-import DemoSchema from "./components/DemoSchema.jsx";
-import DemoSummary from "./components/DemoSummary.jsx";
+import DemoSchema from "./components/DemoSchema";
+import DemoSummary from "./components/DemoSummary";
 
 import 'remixicon/fonts/remixicon.css';
 

@@ -6,11 +6,9 @@ import UserIcon from "remixicon-react/UserLineIcon";
 import { Badge } from "@dataesr/react-dsfr";
 
 import { Person, PersonRole, PersonWithGenericRole } from "../../static/model";
+import {GridComponentProps} from "./Grid";
 
-type PersonCardProps = EntityCardProps & {
-  entity: PersonWithGenericRole;
-  onClick: (entity: PersonWithGenericRole) => void;
-};
+type PersonCardProps = GridComponentProps<PersonWithGenericRole>;
 
 type PersonInfoProps = {
   person: Person;
@@ -19,7 +17,7 @@ type PersonInfoProps = {
 
 function deriveAgeFromDOB(dob: string): number {
   const [day, month, year] = dob.split("/");
-  const msDelta: number = new Date() - new Date(year, month, day);
+  const msDelta: number = new Date().valueOf() - new Date(+year, +month, +day).valueOf();
   return Math.floor(msDelta / (1000 * 3600 * 24 * 365));
 }
 
