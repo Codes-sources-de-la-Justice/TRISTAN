@@ -13,21 +13,21 @@ export type GridComponentProps<T> = {
   onClick: (entity: Entity & T) => void;
 };
 
-type GridCardProps = {
-  Component: JSXElementConstructor<GridComponentProps>;
+type GridCardProps<T> = {
+  Component: JSXElementConstructor<GridComponentProps<T>>;
   entities: Entity[];
   onClick: (entity: Entity) => void;
   hiddenIds: number[];
-  selectedId: number;
+  selectedId?: number | null;
 };
 
-export function GridCard({
+export function GridCard<T>({
   Component,
   entities,
   onClick,
   hiddenIds,
   selectedId,
-}: GridCardProps) {
+}: GridCardProps<T>) {
   return (
     <div className="grid-of-cards">
       {entities.map((entity) => (

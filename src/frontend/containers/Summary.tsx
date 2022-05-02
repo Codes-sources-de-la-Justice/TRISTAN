@@ -82,7 +82,7 @@ function Summary({
   const [selectedEntity, selectEntity] = useState<Entity | null>(null);
   const handleClose = () => selectEntity(null);
 
-  const [preferredIds, setPreferredIds] = useState<number[]>([]);
+  const [preferredIds, setPreferredIds] = useState<string[]>([]);
   const hiddenIds =
     preferredIds.length > 0
       ? ([...Object.values(entities), facts] as Entity[][]).flatMap((a) =>
@@ -147,7 +147,7 @@ function Summary({
           </div>
         </div>
         <div className="summary-body">
-          <GridCard
+	<GridCard<Fact>
             Component={FactCard}
             entities={facts}
             onClick={handleEntityClick}
