@@ -199,14 +199,10 @@ export function getClosedNeighborWithDepth(
   id: string,
   elements: ElementDefinition[],
   depth: number = 1,
-  filterAtDepth: (depth: number, neighbor: any) => boolean
+  filterAtDepth: (depth: number, neighbor: any) => boolean = () => true
 ) {
   let seen = new Set();
   const depths: Array<Set<string>> = Array.from(Array(depth), () => new Set());
-
-  if (!filterAtDepth) {
-    filterAtDepth = () => true;
-  }
 
   depths[0] = new Set([id]);
   for (let iDepth = 1; iDepth < depth; iDepth++) {
