@@ -17,19 +17,20 @@ function wordToTitleCase(str: string) {
 }
 
 type EdgeControllerProps = {
-	cy: Cytoscape.Core;
-	id: string;
+	cy?: Cytoscape.Core;
+	id?: string;
 	style: CSSProperties;
 };
 
 function EdgeController({cy, id, style}: EdgeControllerProps) {
-	const edge = cy.getElementById(id);
-
 	useEffect(() => {
-		if (edge.length > 0) {
-			edge.style(style);
+		if (cy && id) {
+			const edge = cy.getElementById(id);
+			if (edge.length > 0) {
+				edge.style(style);
+			}
 		}
-	});
+	}, [cy, id]);
 
 	return null;
 }
@@ -114,6 +115,10 @@ function isNode(node: Cytoscape.ElementDefinition): node is Cytoscape.NodeDefini
 	return node.group === 'nodes';
 }
 
+function isGenericNode(node: Cytoscape.ElementDefinition): node is Cytoscape.NodeDefinition & { data: GenericNodeData } {
+	return isNode(node) && node.data.id != null && node.data.type != null && typeof node.data.type === 'string';
+}
+
 function isEdge(node: Cytoscape.ElementDefinition): node is Cytoscape.EdgeDefinition {
 	return node.group === 'edges';
 }
@@ -167,8 +172,8 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 		document.removeEventListener('mouseup', this.handleDisableDrag);
 	}
 
-	handleOutsideClick(evt) {
-		if (evt.target.nodeName === 'CANVAS' && !this.state.drag) {
+	handleOutsideClick(evt: Event) {
+		if (evt.target instanceof Element && evt.target.nodeName === 'CANVAS' && !this.state.drag) {
 			this.props.onOutClick();
 		}
 	}
@@ -178,12 +183,13 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 
 		return (
 			<div ref={this.wrapperRef}>
-				<FastCoseGraphWrapper layoutConstraints={layoutConstraints} {...(layoutParameters || {})}>
+				<FastCoseGraphWrapper
+					layoutConstraints={layoutConstraints}
+					layoutParameters={layoutParameters}>
 					{elements.map(element => {
-						if (isNode(element)) {
-							if (!element.data.id) return null;
+						if (isGenericNode(element)) {
 							return this.renderNode(
-								{...element.data, labelWidth: 300, labelHeight: 300},
+								element.data,
 								onSelect,
 								onUnselect,
 								(ghostIds || []).includes(element.data.id),

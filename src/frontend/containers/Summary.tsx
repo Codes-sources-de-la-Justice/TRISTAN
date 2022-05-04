@@ -86,7 +86,7 @@ function Summary({
     preferredIds.length > 0
       ? ([...Object.values(entities), facts] as Entity[][]).flatMap((a) =>
           a
-            .filter((n) => !preferredIds.includes(n.Global_Id))
+            .filter((n) => !preferredIds.includes(n.Global_Id.toString()))
             .map((n) => n.Global_Id)
         )
       : [];
@@ -98,7 +98,7 @@ function Summary({
       setPreferredIds([]);
     } else {
       const [_, neighbors] = getClosedNeighborWithDepth(
-        entity.Global_Id,
+        entity.Global_Id.toString(),
         elements,
         3
       );
@@ -110,12 +110,12 @@ function Summary({
     {
       target: ".summary",
       content: "Bienvenue dans votre visualisation de synthèse",
-      placementBeacon: "top",
+      placementBeacon: "top" as const,
     },
     {
       target: ".entity-card",
       content: "Vous trouverez vos entités ici !",
-      placementBeacon: "top",
+      placementBeacon: "top" as const,
     },
   ];
 
