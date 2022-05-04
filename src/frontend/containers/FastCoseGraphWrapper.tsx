@@ -1,3 +1,4 @@
+// @ts-nocheck
 import fcose from 'cytoscape-fcose'
 import CyReact from 'cytoscape-react';
 import cytoscape from 'cytoscape'
