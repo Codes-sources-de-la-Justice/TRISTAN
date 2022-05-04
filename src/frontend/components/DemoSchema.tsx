@@ -1,18 +1,18 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Schema from '../containers/Schema';
-import { toBackendPayload, toGraph, getClosedNeighborWithDepth } from '../static';
+import { toBackendPayload, toGraph, getClosedNeighborWithDepth, GenericNodeData } from '../static';
 import { db } from '../static/db';
 import './DemoSchema.css';
 
 import { DebugBarLayout, LayoutParameters } from './SchemaDebug/Toolbar'
 
-function useOnClickOutside<T>(ref: React.RefObject<T>, callback: () => void) {
+function useOnClickOutside<T extends HTMLElement>(ref: React.RefObject<T>, callback: () => void) {
   useEffect(() => {
     /**
      * Alert if clicked on outside of element
      */
-		function handleClickOutside(event: Event) {
-      if (ref.current && !ref.current.contains(event.target)) {
+		function handleClickOutside(event: MouseEvent) {
+      if (ref.current && event.target instanceof Element && !ref.current.contains(event.target)) {
 				callback();
       }
     }
@@ -30,7 +30,7 @@ function DemoSchema({databaseKey}: { databaseKey: string }) {
 	const summaryData = toGraph(payload);
 	const initialLayoutConstraints = summaryData.layoutConstraints;
 	const [layoutConstraints, setLayoutConstraints] = useState(initialLayoutConstraints);
-	const [selection, setSelection] = useState([]);
+	const [selection, setSelection] = useState<GenericNodeData[]>([]);
 	const [layoutParameters, setLayoutParameters] = useState<LayoutParameters>({
 		nodeRepulsion: 1000,
 		nodeSeparation: 500,
@@ -39,6 +39,8 @@ function DemoSchema({databaseKey}: { databaseKey: string }) {
 	});
 
 	const getProperNeigh = (node: cytoscape.NodeDataDefinition) => {
+		if (!node.id) return [];
+
 		const [_, neigh] = getClosedNeighborWithDepth(node.id,
 			summaryData.elements, 2);
 
@@ -58,11 +60,11 @@ function DemoSchema({databaseKey}: { databaseKey: string }) {
 		if (!alreadyHere) {
 			setSelection([...selection, node]);
 		}
-	});
+	}, [selection]);
 
 	const onUnselect = useCallback(node => {
 		setSelection(selection.filter(n => n.id !== node.id));
-	});
+	}, [selection]);
 
 	const onOutClick = () => {
 		setSelection([]);

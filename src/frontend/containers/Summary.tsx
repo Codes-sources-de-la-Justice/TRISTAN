@@ -5,14 +5,14 @@ import type { Entity } from "../components/cards/Grid";
 import { getClosedNeighborWithDepth } from "../static";
 import Joyride from "react-joyride";
 
-import { Tag } from '@dataesr/react-dsfr';
+import { Tag } from "@dataesr/react-dsfr";
 
 import { FactInfo } from "../components/cards/Fact";
 import { PersonInfo } from "../components/cards/Person";
 import { FactCard, GridCard, PersonCard } from "../components/cards";
 
 import "./Summary.css";
-import { Fact, GeneralInformation, PersonEntityPartition } from "static/model";
+import { Fact, GeneralInformation, PersonEntityPartition, PersonWithGenericRole } from "static/model";
 import { ElementDefinition } from "cytoscape";
 
 type SummaryProps = {
@@ -38,12 +38,11 @@ function Sidebar({ open, entity, onClose }: SidebarProps) {
   if (!open) return null;
   if (!entity) return null;
 
-  const entityInfo =
-    isFact(entity) ? (
-      <FactInfo fact={entity} level={2} />
-    ) : (
-      <PersonInfo person={entity} level={2} />
-    );
+  const entityInfo = isFact(entity) ? (
+    <FactInfo fact={entity} level={2} />
+  ) : (
+    <PersonInfo person={entity} level={2} />
+  );
 
   return (
     <div className="sidebar">
@@ -147,7 +146,7 @@ function Summary({
           </div>
         </div>
         <div className="summary-body">
-	<GridCard<Fact>
+          <GridCard<Fact>
             Component={FactCard}
             entities={facts}
             onClick={handleEntityClick}

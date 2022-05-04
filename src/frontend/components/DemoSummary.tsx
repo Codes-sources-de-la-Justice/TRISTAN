@@ -3,20 +3,20 @@ import Summary from "../containers/Summary";
 import { toBackendPayload, toGraph } from "../static";
 import { db } from "../static/db";
 
-class ErrorBoundary extends React.Component {
+interface Error {
+  stack?: string;
+}
+
+class ErrorBoundary extends React.Component<{}, { hasError: boolean; }> {
   state = {
     hasError: false,
   };
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error) {
     return { hasError: true };
   }
 
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("Error", error, errorInfo);
   }
 

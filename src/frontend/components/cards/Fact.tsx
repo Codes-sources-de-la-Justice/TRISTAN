@@ -3,7 +3,7 @@ import React, { Fragment, ReactNode, useCallback } from "react";
 import MapPinIcon from "remixicon-react/MapPinLineIcon";
 import TimeIcon from "remixicon-react/TimeLineIcon";
 
-import { EntityCard, EntityCardProps, EntityHeader } from "./Entity";
+import { EntityCard, EntityHeader } from "./Entity";
 import { Badge } from "@dataesr/react-dsfr";
 import { Fact, LawArticle } from "static/model";
 import {GridComponentProps} from "./Grid";
@@ -21,7 +21,7 @@ type ListOfLinksProps = {
 };
 
 function ListOfLinks({ list, empty = null }: ListOfLinksProps) {
-  if (!list || !list.map) return empty;
+  if (!list || !list.map) return <>{empty}</>;
 
   return (
     <Fragment>

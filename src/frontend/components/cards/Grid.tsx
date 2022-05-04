@@ -6,22 +6,22 @@ import { Fact, PersonWithGenericRole } from "static/model";
 
 export type Entity = PersonWithGenericRole | Fact;
 
-export type GridComponentProps<T> = {
-  entity: Entity & T;
+export type GridComponentProps<T extends Entity> = {
+  entity: T;
   hidden: boolean;
   selected: boolean;
-  onClick: (entity: Entity & T) => void;
+  onClick: (entity: T) => void;
 };
 
-type GridCardProps<T> = {
+type GridCardProps<T extends Entity> = {
   Component: JSXElementConstructor<GridComponentProps<T>>;
-  entities: Entity[];
-  onClick: (entity: Entity) => void;
+  entities: T[];
+  onClick: (entity: T) => void;
   hiddenIds: number[];
   selectedId?: number | null;
 };
 
-export function GridCard<T>({
+export function GridCard<T extends Entity>({
   Component,
   entities,
   onClick,

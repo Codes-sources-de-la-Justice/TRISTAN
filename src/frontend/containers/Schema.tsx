@@ -4,8 +4,13 @@ import CyReact from 'cytoscape-react';
 import Cytoscape from 'cytoscape';
 
 import FastCoseGraphWrapper from "./FastCoseGraphWrapper";
+import type { GenericNodeData } from '../static';
+import { GenericNodeType } from '../static';
+
+import { match } from 'ts-pattern'
 
 import './Schema.css';
+import {FactNode, PersonNode} from "components/nodes";
 
 function wordToTitleCase(str: string) {
 	return str[0].toUpperCase() + str.substring(1);
@@ -30,7 +35,7 @@ function EdgeController({cy, id, style}: EdgeControllerProps) {
 }
 
 type GenericNodeProps = {
-	type: string;
+	node: GenericNodeData;
 	ghost: boolean;
 	selected: boolean;
 	onSelect?: (props: any, evt: any) => void;
@@ -53,8 +58,8 @@ function useDrag(initialValue: boolean) {
 
 function GenericNode(props: GenericNodeProps) {
 	const { drag, handleEnableDrag, handleDisableDrag } = useDrag(false);
-	const { type, ghost, selected } = props
-	const renderFunction = () => {}; // this[`render${wordToTitleCase(type)}`] || this.renderGeneric;
+	const { node, ghost, selected } = props
+	const { type, entity } = node
 
 	const onClick = (evt: MouseEvent) => {
 		if (props.onSelect && !drag && !selected) {
@@ -82,7 +87,11 @@ function GenericNode(props: GenericNodeProps) {
 		onMouseUp={onClick}
 		onMouseMove={handleEnableDrag}
 		onMouseDown={handleDisableDrag}>
-		{renderFunction()}
+		{match(node)
+			.with({ type: GenericNodeType.Fact }, ({ entity }) => (<FactNode fact={entity} />))
+			.with({ type: GenericNodeType.Person }, ({ entity }) => (<PersonNode person={entity} />))
+			.exhaustive()
+		}
 	</div>);
 }
 
@@ -128,11 +137,11 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 		this.handleDisableDrag = () => this.setState({drag: false});
 	}
 
-	renderNode(node: Cytoscape.NodeDataDefinition, onSelect: MouseEventHandler, onUnselect: MouseEventHandler, ghost: boolean, selected: boolean) {
+	renderNode(node: GenericNodeData, onSelect: MouseEventHandler, onUnselect: MouseEventHandler, ghost: boolean, selected: boolean) {
 		const { id } = node
 		return (
 			<CyReact.NodeWrapper key={id} id={id}>
-				<GenericNode {...node} onSelect={node.onSelect || onSelect} onUnselect={node.onUnselect || onUnselect} ghost={ghost} selected={selected} />
+				<GenericNode node={node} onSelect={node.onSelect || onSelect} onUnselect={node.onUnselect || onUnselect} ghost={ghost} selected={selected} />
 			</CyReact.NodeWrapper>
 		);
 	}

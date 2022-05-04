@@ -9,6 +9,16 @@ import type {
   EdgeDataDefinition,
 } from "cytoscape";
 
+export enum GenericNodeType {
+  Fact = "fact",
+  Person = "person"
+}
+
+export type GenericNodeData = NodeDataDefinition & { id: string; } & ({
+  type: GenericNodeType.Fact;
+  entity: Fact;
+} | { type: GenericNodeType.Person, entity: PersonWithGenericRole });
+
 
 function mapRoleFromPerson(person: Person): PersonRole[] {
   return getFactImplications(person).map((imp) => imp.Implication);
@@ -50,7 +60,7 @@ export function toGraph(backendPayload: BackendAnalysis): GraphAnalysis {
 
   // TODO: O(1) check for already present items.
 
-  function addNode(elements: ElementDefinition[], data: NodeDataDefinition) {
+  function addNode(elements: ElementDefinition[], data: GenericNodeData) {
     elements.push({
       group: "nodes",
       data,
@@ -75,11 +85,11 @@ export function toGraph(backendPayload: BackendAnalysis): GraphAnalysis {
     return elements.some((element) => element?.data?.id === nodeId.toString());
   }
 
-  function basicEntityNode(entity: Person): NodeDataDefinition {
+  function basicEntityNode(entity: PersonWithGenericRole): GenericNodeData {
     return {
       id: entity.Global_Id.toString(),
-      type: "person",
-      ...entity,
+      type: GenericNodeType.Person,
+      entity
     };
   }
 
@@ -121,7 +131,7 @@ export function toGraph(backendPayload: BackendAnalysis): GraphAnalysis {
   }
 
   function registerFact(elements: ElementDefinition[], fact: Fact) {
-    addNode(elements, { id: fact.Global_Id.toString(), type: "fact", ...fact });
+    addNode(elements, { id: fact.Global_Id.toString(), type: GenericNodeType.Fact, entity: fact });
   }
 
   Object.values(backendPayload.facts).forEach((fact) =>
@@ -195,12 +205,19 @@ function flattenSet<T>(A: ArrayLike<Set<T>>): Set<T> {
   return Array.from(A).reduce((prev, cur) => union(prev, cur), new Set());
 }
 
+/** Calcule le voisinage d'ordre n fermé d'un noeud
+ * avec un filtrage à profondeur arbitraire pour tout k ≤ n.
+ * Par défaut, n = 1.
+ *
+ * Retourne la paire (profondeur → ensemble de noeuds, voisinage fermé d'ordre n filtré).
+ * */
+
 export function getClosedNeighborWithDepth(
   id: string,
   elements: ElementDefinition[],
   depth: number = 1,
   filterAtDepth: (depth: number, neighbor: any) => boolean = () => true
-) {
+): [Array<Set<string>>, Set<string>] {
   let seen = new Set();
   const depths: Array<Set<string>> = Array.from(Array(depth), () => new Set());
 
@@ -214,7 +231,7 @@ export function getClosedNeighborWithDepth(
     seen = union(seen, depths[iDepth - 1]);
   }
 
-  return [depths, flattenSet(Object.values(depths))];
+  return [depths, flattenSet(Array.from(depths))];
 }
 
 export function getClosedNeighbor(id: string, elements: ElementDefinition[]) {
