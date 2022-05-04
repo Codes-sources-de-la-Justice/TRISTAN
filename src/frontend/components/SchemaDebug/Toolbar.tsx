@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {LayoutConstraints} from '../../static/model';
 import Cytoscape from 'cytoscape'
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Cytoscape from 'cytoscape'
 
 export function getEntity(id: string, elements: Cytoscape.ElementDefinition[]) {

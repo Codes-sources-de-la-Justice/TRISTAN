@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Cytoscape from 'cytoscape'
 import type { LayoutConstraints } from '../../static/model';
 

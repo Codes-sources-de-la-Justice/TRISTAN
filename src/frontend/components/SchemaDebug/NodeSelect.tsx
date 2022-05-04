@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ChangeEvent } from 'react'
 import { Select } from '@dataesr/react-dsfr';
 import Cytoscape from 'cytoscape'
