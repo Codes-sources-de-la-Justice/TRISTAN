@@ -10,7 +10,7 @@ import { GenericNodeType } from '../static';
 import { match } from 'ts-pattern'
 
 import './Schema.css';
-import {FactNode, PersonNode} from "components/nodes";
+import {FactNode, PersonNode} from "../components/nodes";
 
 function wordToTitleCase(str: string) {
 	return str[0].toUpperCase() + str.substring(1);

@@ -130,6 +130,14 @@ export default defineConfig({
 			fileName: format => `tristan.${format}.js`
 		}
 	},
+	rollupOptions: {
+		external: [ 'pspdfkit' ],
+		output: {
+			globals: {
+				pspdfkit: 'PSPDFKit'
+			}
+		}
+	},
 	esbuild: {
 		loader: 'tsx'
 	},
