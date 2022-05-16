@@ -113,7 +113,13 @@ export function patchReactFloater() {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), loadPSPDFKit()],
+	plugins: [react({
+		babel: {
+			parserOpts: {
+				plugins: [ 'decorators-legacy' ]
+			}
+		}
+	}), loadPSPDFKit()],
 	cacheDir: '.cache/vite',
 	publicDir: "assets",
 	server: {
@@ -131,7 +137,7 @@ export default defineConfig({
 		}
 	},
 	rollupOptions: {
-		external: [ 'pspdfkit' ],
+		external: [ 'pspdfkit', '@angular/core', '@angular/common' ],
 		output: {
 			globals: {
 				pspdfkit: 'PSPDFKit'
@@ -164,6 +170,7 @@ export default defineConfig({
 			'use-image',
 			'dagre',
 			'react-joyride'
-		]
+		],
+		exclude: [ '@angular/core', '@angular/common', 'rxjs' ]
 	}
 })

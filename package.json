@@ -3,6 +3,7 @@
   "workspaces": [
     "lib/cytoscape-react",
     "lib/cytoscape-dom-node",
-    "src/frontend"
+    "src/frontend",
+    "demo/angular"
   ]
 }

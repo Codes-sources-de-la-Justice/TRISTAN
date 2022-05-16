@@ -11,8 +11,9 @@ Il se compose de plusieurs pièces :
 
 - Une API REST Django qui expose des analyseurs ;
 - Des workers Celery qui exécutent des analyseurs ;
-- Un frontend React.js qui fait le rendu des résultats d'analyse ;
-- Un bouchon SPS qui permet de servir des affaires et des pièces à partir d'un dossier de données (que vous devez fournir !)
+- Un frontend React.js qui fait le rendu des résultats d'analyse et offre deux composants (la synthèse et le pré-schéma) sous la forme d'une bibliothèque ;
+- Un bouchon SPS qui permet de servir des affaires et des pièces à partir d'un dossier de données (que vous devez fournir !) ;
+- Un projet de démo dans `demo/angular` qui offre un exemple d'intégration dans une application Angular.js du projet TRISTAN
 
 ## Instructions pour lancer le projet
 
