@@ -15,12 +15,11 @@ let
       src = filteredSrc;
       buildInputs = with pkgs; [
         # Python's backend
-        backend.env
+        # backend.env
 
         # Node.js
-        nodejs
-        yarn2nix
-        yarn
+        nodejs-16_x
+        nodePackages.pnpm
 
         # jq-like tool for XML
         yq
@@ -53,7 +52,6 @@ let
       TRISTAN_FRONTEND = "http://localhost:3000";
 
       shellHook = if copyNodeModules then ''
-        chmod +x node_modules/esbuild-linux-64/bin/esbuild || exit 0
       '' else "";
     };
 in rec {
