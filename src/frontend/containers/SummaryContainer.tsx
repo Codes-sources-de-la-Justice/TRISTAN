@@ -32,8 +32,9 @@ class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
 }
 
 export function SummaryContainer({ idj }: { idj?: string }) {
- if (!idj) return null; // TODO: spinner?
-  const backendResponse = Object.values(db)[0]; // TODO: use idj !
+  if (!idj) return null; // TODO: spinner?
+  const backendResponse = db[idj];
+  if (!backendResponse) return <h1>IDJ non trouvé</h1>;
   const payload = toBackendPayload(backendResponse);
   const { elements } = toGraph(payload);
   const { facts, victims, indictees, witnesses, others, general } = payload;

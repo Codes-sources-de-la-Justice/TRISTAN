@@ -25,7 +25,8 @@
             "preserveSymlinks": true,
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              { "glob": "*.css", "input": "../../node_modules/tristan/dist/", "output": "./assets/tristan/" }
             ],
             "styles": [
               "src/styles.css"

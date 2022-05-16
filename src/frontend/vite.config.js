@@ -1,4 +1,6 @@
 import { defineConfig } from 'vite'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import injectCss from '@cxing/vitejs-plugin-inject-css';
 import react from '@vitejs/plugin-react'
 //import reactRefresh from '@vitejs/plugin-react-refresh'
 
@@ -119,7 +121,7 @@ export default defineConfig({
 				plugins: [ 'decorators-legacy' ]
 			}
 		}
-	}), loadPSPDFKit()],
+	}), loadPSPDFKit(), injectCss(), { ...peerDepsExternal(), apply: 'build' }],
 	cacheDir: '.cache/vite',
 	publicDir: "assets",
 	server: {
@@ -137,7 +139,7 @@ export default defineConfig({
 		}
 	},
 	rollupOptions: {
-		external: [ 'pspdfkit', '@angular/core', '@angular/common' ],
+		externals: [ 'pspdfkit', '@angular/core', '@angular/common', '@angular/compiler' ],
 		output: {
 			globals: {
 				pspdfkit: 'PSPDFKit'
