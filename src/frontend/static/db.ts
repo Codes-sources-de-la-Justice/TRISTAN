@@ -5,6 +5,7 @@ function baseName(x: string): string {
   return parts[parts.length - 1];
 }
 
+// @ts-ignore
 const tgcmFiles: Object = import.meta.globEager("./tgcm/*.json");
 function processTgcmEntry([filename, json]: [string, RawAnalysis]): [
   string,

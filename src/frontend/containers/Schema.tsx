@@ -182,7 +182,8 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 		const { layoutConstraints, elements, onSelect, onUnselect, layoutParameters, ghostIds, selectedIds } = this.props
 
 		return (
-			<div ref={this.wrapperRef}>
+		 <div ref={this.wrapperRef}>
+			 {/* @ts-ignore */}
 				<FastCoseGraphWrapper
 					layoutConstraints={layoutConstraints}
 					layoutParameters={layoutParameters}>

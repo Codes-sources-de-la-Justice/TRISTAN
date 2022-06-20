@@ -14,7 +14,9 @@
     }
   },
   "peerDependencies": {
-    "@angular/core": "~13.3.0"
+    "@angular/common": "~12",
+    "@angular/compiler": "~12",
+    "@angular/core": "~12"
   },
   "dependencies": {
     "@dataesr/react-dsfr": "^1.0.5",
@@ -43,7 +45,7 @@
     "remixicon": "^2.5.0",
     "remixicon-react": "^1.0.0",
     "ts-pattern": "^4.0.1",
-    "typescript": "^4.6.3",
+    "typescript": "~4",
     "use-image": "^1.0.10",
     "uuid": "^8.3.2",
     "vite": "^2.9.5",
@@ -52,7 +54,9 @@
   },
   "scripts": {
     "start": "vite .",
-    "build": "vite build .",
+    "build-angular": "ngcc --tsconfig ./tsconfig.angular.json && ngc --project tsconfig.angular.json && find -iname '*.css' -exec cp --parents {} angular-dist/",
+    "build": "PREPROCESS_ANGULAR=1 npm run build-angular && vite build .",
+    "build-no-ngcc": "vite build .",
     "test": "web-test-runner \"**/*.test.jsx\" --coverage --config src/frontend/web-test-runner.config.js --node-resolver",
     "test:a11y": "pa11y http://localhost:3000/"
   },
@@ -85,6 +89,7 @@
     ]
   },
   "devDependencies": {
+    "@angular/compiler-cli": "^12.2.16",
     "@cxing/vitejs-plugin-inject-css": "^0.0.2",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",

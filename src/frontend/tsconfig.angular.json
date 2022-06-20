@@ -1,13 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist/",
+    "outDir": "./angular-dist/",
     "types": []
   },
   "angularCompilerOptions": {
-    "enableResourceInlining": false,
-    "compilationMode": "partial",
-    "strictMetadataEmit": true
+    "enableIvy": true,
+    "compilationMode": "partial"
   },
   "files": ["lib/main.tsx"],
   "include": ["src/**/*.d.ts"]

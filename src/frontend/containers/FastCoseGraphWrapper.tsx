@@ -95,10 +95,12 @@ export default class FastCoseGraphWrapper extends CyReact.GraphWrapper {
 
     graphElementDidMount (el_component) {
         this.layout();
-    }
+		}
 
     graphElementDidUpdate (el_component) {
         //this.layout();
-    }
+		}
+
+		render() { return super.render(); }
 }
 

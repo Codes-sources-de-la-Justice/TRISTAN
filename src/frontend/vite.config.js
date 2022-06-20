@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import process from 'process';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import injectCss from '@cxing/vitejs-plugin-inject-css';
 import react from '@vitejs/plugin-react'
@@ -133,7 +134,7 @@ export default defineConfig({
 	build: {
 		manifest: true,
 		lib: {
-			entry: resolve(__dirname, 'lib/main.tsx'),
+			entry: !!process.env['PREPROCESS_ANGULAR'] ? resolve(__dirname, 'angular-dist/lib/main.jsx') : resolve(__dirname, 'lib/main.tsx'),
 			name: 'TRISTAN',
 			fileName: format => `tristan.${format}.js`
 		}
