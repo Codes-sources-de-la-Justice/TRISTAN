@@ -1,0 +1,38 @@
+{
+  "extends": "nx/presets/npm.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "ng",
+          "build",
+          "watch",
+          "test",
+          "build-angular",
+          "build-no-ngcc",
+          "test:a11y"
+        ]
+      }
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  },
+  "affected": {
+    "defaultBase": "master"
+  },
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  },
+  "workspaceLayout": {
+    "appsDir": "demos",
+    "libsDir": "libs"
+  }
+}
