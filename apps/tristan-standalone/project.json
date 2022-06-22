@@ -1,0 +1,93 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/tristan-standalone/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:webpack",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/tristan-standalone",
+        "index": "apps/tristan-standalone/src/index.html",
+        "baseHref": "/",
+        "main": "apps/tristan-standalone/src/main.tsx",
+        "polyfills": "apps/tristan-standalone/src/polyfills.ts",
+        "tsConfig": "apps/tristan-standalone/tsconfig.app.json",
+        "assets": [
+          "apps/tristan-standalone/src/favicon.ico",
+          "apps/tristan-standalone/src/assets"
+        ],
+        "styles": [
+          "apps/tristan-standalone/src/styles.css"
+        ],
+        "scripts": [],
+        "webpackConfig": "@nrwl/react/plugins/webpack"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/tristan-standalone/src/environments/environment.ts",
+              "with": "apps/tristan-standalone/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "tristan-standalone:build",
+        "hmr": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "tristan-standalone:build:development"
+        },
+        "production": {
+          "buildTarget": "tristan-standalone:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "apps/tristan-standalone/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/apps/tristan-standalone"
+      ],
+      "options": {
+        "jestConfig": "apps/tristan-standalone/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
