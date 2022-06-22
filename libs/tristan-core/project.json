@@ -1,0 +1,56 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/tristan-core/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:rollup",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/libs/tristan-core",
+        "tsConfig": "libs/tristan-core/tsconfig.lib.json",
+        "project": "libs/tristan-core/package.json",
+        "entryFile": "libs/tristan-core/src/index.ts",
+        "external": [
+          "react/jsx-runtime",
+          "react",
+          "react-dom",
+          "cytoscape"
+        ],
+        "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+        "compiler": "babel",
+        "assets": [
+          {
+            "glob": "libs/tristan-core/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "libs/tristan-core/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/libs/tristan-core"
+      ],
+      "options": {
+        "jestConfig": "libs/tristan-core/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}
