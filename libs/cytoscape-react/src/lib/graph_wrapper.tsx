@@ -8,8 +8,9 @@ import React, {
 } from "react";
 import Cytoscape from "cytoscape";
 // @ts-ignore
-import CyDomNode from "cytoscape-dom-node";
+import CyDomNode from "./dom-node-extension";
 
+// @ts-ignore
 Cytoscape.use(CyDomNode);
 
 type Props = {
