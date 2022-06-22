@@ -1,0 +1,45 @@
+{
+  "projectType": "library",
+  "sourceRoot": "libs/angular-tristan/src",
+  "prefix": "app",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": [
+        "dist/libs/angular-tristan"
+      ],
+      "options": {
+        "project": "libs/angular-tristan/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/angular-tristan/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/angular-tristan/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/libs/angular-tristan"
+      ],
+      "options": {
+        "jestConfig": "libs/angular-tristan/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/angular-tristan/**/*.ts",
+          "libs/angular-tristan/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}
