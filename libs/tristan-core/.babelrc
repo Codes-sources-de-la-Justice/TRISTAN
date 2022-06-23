@@ -8,9 +8,7 @@
       }
     ]
   ],
-  "plugins": [
-    
-    
-    
+  "plugins": [    
+    "import-recursive"
   ]
 }

@@ -25,7 +25,7 @@ function useOnClickOutside<T extends HTMLElement>(ref: React.RefObject<T>, callb
   }, [ref]);
 }
 
-function DemoSchema({databaseKey}: { databaseKey: string }) {
+export function DemoSchema({databaseKey}: { databaseKey: string }) {
 	const payload = toBackendPayload(db[databaseKey]);
 	const summaryData = toGraph(payload);
 	const initialLayoutConstraints = summaryData.layoutConstraints;
@@ -92,5 +92,3 @@ function DemoSchema({databaseKey}: { databaseKey: string }) {
 	</div>
 	);
 }
-
-export default DemoSchema;

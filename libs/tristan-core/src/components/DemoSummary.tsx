@@ -31,7 +31,7 @@ class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError:
   }
 }
 
-function DemoSummary({ databaseKey }: { databaseKey: string }) {
+export function DemoSummary({ databaseKey }: { databaseKey: string }) {
   const payload = toBackendPayload(db[databaseKey]);
   const { elements } = toGraph(payload);
   const { facts, victims, indictees, witnesses, others, general } = payload;
@@ -55,5 +55,3 @@ function DemoSummary({ databaseKey }: { databaseKey: string }) {
     </ErrorBoundary>
   );
 }
-
-export default DemoSummary;

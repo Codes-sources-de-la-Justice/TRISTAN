@@ -2,7 +2,7 @@
 import fcose from 'cytoscape-fcose'
 import cytoscape from 'cytoscape'
 
-import CyReact from '@Codes-sources-de-la-justice/cytoscape-react';
+import { GraphWrapper } from '@Codes-sources-de-la-justice/cytoscape-react';
 import {LayoutConstraints} from '../static/model';
 
 cytoscape.use(fcose);
@@ -34,7 +34,7 @@ type FastCoseGraphWrapperProps = {
 
 type FastCoseLayoutParameters = FastCoseGraphWrapperProps & {};
 
-export default class FastCoseGraphWrapper extends CyReact.GraphWrapper {
+export default class FastCoseGraphWrapper extends GraphWrapper {
 	_debounced_layout: (params: FastCoseLayoutParameters) => void;
 	_layout?: cytoscape.Layouts;
 	_cy?: cytoscape.Core;

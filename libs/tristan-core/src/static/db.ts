@@ -1,20 +1,22 @@
 import { RawAnalysis } from "./model";
 
+// @ts-ignore
+const TGCMFiles = require.context("./tgcm", true, /^(.*\.(json$))[^.]*$/im);
+
 function baseName(x: string): string {
   const parts = x.split("/");
   return parts[parts.length - 1];
 }
 
-// @ts-ignore
-// TODO: fix wildcard import
-const tgcmFiles: Object = {}; // import.meta.globEager("./tgcm/*.json");
 function processTgcmEntry([filename, json]: [string, RawAnalysis]): [
   string,
   RawAnalysis
 ] {
   const baseFileName = baseName(filename);
-  return [baseFileName.substr(0, baseFileName.length - 5), json];
+  return [baseFileName.substring(0, baseFileName.length - 5), json];
 }
 export const db = Object.fromEntries(
-  Object.entries(tgcmFiles).map(processTgcmEntry)
+  // TODO: type require.context!
+  // @ts-ignore
+  TGCMFiles.keys().map(key => [key, TGCMFiles(key)]).map(processTgcmEntry)
 );

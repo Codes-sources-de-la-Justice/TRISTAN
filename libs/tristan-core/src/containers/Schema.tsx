@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import React, { useEffect, useState, MouseEvent, CSSProperties, MouseEventHandler } from "react";
-import CyReact from '@Codes-sources-de-la-justice/cytoscape-react';
+import { NodeWrapper, EdgeWrapper } from '@Codes-sources-de-la-justice/cytoscape-react';
 import Cytoscape from 'cytoscape';
 
 import FastCoseGraphWrapper from "./FastCoseGraphWrapper";
@@ -148,18 +148,18 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 						 ghost: boolean, selected: boolean) {
 		const { id } = node
 		return (
-			<CyReact.NodeWrapper key={id} id={id}>
+			<NodeWrapper key={id} id={id}>
 				<GenericNode node={node} onSelect={node['onSelect'] || onSelect} onUnselect={node['onUnselect'] || onUnselect} ghost={ghost} selected={selected} />
-			</CyReact.NodeWrapper>
+			</NodeWrapper>
 		);
 	}
 
 	renderEdge({source, target, id}: Cytoscape.EdgeDataDefinition, ghost: boolean) {
 		return (
-			<CyReact.EdgeWrapper className='' key={id} id={id} source={source} target={target} canvasClassName=''>
+			<EdgeWrapper className='' key={id} id={id} source={source} target={target} canvasClassName=''>
 				<EdgeController
 					style={{ opacity: ghost ? 0.1 : 1 }} />
-			</CyReact.EdgeWrapper>
+			</EdgeWrapper>
 		);
 	}
 
