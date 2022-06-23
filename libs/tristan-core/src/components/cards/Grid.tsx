@@ -1,5 +1,6 @@
 import React, { JSXElementConstructor } from "react";
 import { Fact, PersonWithGenericRole } from "../../static/model";
+import styled from 'styled-components';
 
 // TODO: hiddenIds should be a Map
 // TODO: onClick type confusion is a code smell.
@@ -21,6 +22,13 @@ type GridCardProps<T extends Entity> = {
   selectedId?: number | null;
 };
 
+const StyledGrid = styled.div`
+  display: grid;
+  grid-gap: 18px;
+  grid-auto-rows: minmax(100px, auto);
+  grid-template-columns: repeat(5, 1fr);
+`;
+
 export function GridCard<T extends Entity>({
   Component,
   entities,
@@ -29,7 +37,7 @@ export function GridCard<T extends Entity>({
   selectedId,
 }: GridCardProps<T>) {
   return (
-    <div className="grid-of-cards">
+    <StyledGrid>
       {entities.map((entity) => (
         <Component
           hidden={hiddenIds.includes(entity.Global_Id)}
@@ -39,6 +47,6 @@ export function GridCard<T extends Entity>({
           selected={entity.Global_Id === selectedId}
         />
       ))}
-    </div>
+    </StyledGrid>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import Schema from '../containers/Schema';
 import { toBackendPayload, toGraph, getClosedNeighborWithDepth, GenericNodeData } from '../static';
 import { db } from '../static/db';
-import './DemoSchema.css';
+//import './DemoSchema.css';
 
 import { DebugBarLayout, LayoutParameters } from './SchemaDebug/Toolbar'
 

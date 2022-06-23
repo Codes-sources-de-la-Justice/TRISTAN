@@ -20,7 +20,7 @@
           "react-dom",
           "cytoscape"
         ],
-        "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+        "rollupConfig": "libs/tristan-core/rollup.config.cjs",
         "compiler": "babel",
         "assets": [
           {

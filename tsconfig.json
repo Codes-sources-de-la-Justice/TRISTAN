@@ -18,12 +18,13 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "paths": {
       "@Codes-sources-de-la-justice/angular-tristan": [
         "libs/angular-tristan/src/index.ts"
       ],
       "@Codes-sources-de-la-justice/react-tristan": [
-        "dist/libs/tristan-core/"
+        "libs/tristan-core/src/index.ts"
       ],
       "@Codes-sources-de-la-justice/cytoscape-dom-node": [
         "libs/cytoscape-dom-node/src/index.ts"

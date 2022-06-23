@@ -1,12 +1,14 @@
 import React, { useCallback } from "react";
 
-import { EntityCardProps, EntityCard, EntityHeader } from "./Entity";
+import { EntityCard, EntityHeader } from "./Entity";
 
 import UserIcon from "remixicon-react/UserLineIcon";
 import { Badge } from "@dataesr/react-dsfr";
 
 import { Person, PersonRole, PersonWithGenericRole } from "../../static/model";
 import {GridComponentProps} from "./Grid";
+
+import styled from 'styled-components';
 
 type PersonCardProps = GridComponentProps<PersonWithGenericRole>;
 
@@ -28,6 +30,9 @@ const prettyRoles = {
 	[PersonRole.Other]: "inconnu"
 };
 
+const Warning = styled.i`
+  color: orange;
+`;
 
 export function PersonInfo({ person, level = 1 }: PersonInfoProps) {
   const age = deriveAgeFromDOB(person.Naissance_Date);
@@ -48,7 +53,7 @@ export function PersonInfo({ person, level = 1 }: PersonInfoProps) {
         <>
           <p>
             {age} ans (<i>{person.Naissance_Date}</i>){" "}
-            {age <= 18 && <i className="warning">Mineur.e</i>}
+            {age <= 18 && <Warning>Mineur.e</Warning>}
           </p>
           <p>{person.Profession["#text"]}</p>
         </>

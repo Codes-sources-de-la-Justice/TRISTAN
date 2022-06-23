@@ -11,9 +11,10 @@ import { FactInfo } from "../components/cards/Fact";
 import { PersonInfo } from "../components/cards/Person";
 import { FactCard, GridCard, PersonCard } from "../components/cards";
 
-import "./Summary.css";
 import { Fact, GeneralInformation, PersonEntityPartition, PersonWithGenericRole } from "../static/model";
 import { ElementDefinition } from "cytoscape";
+
+import styled from 'styled-components';
 
 type SummaryProps = {
   summary: {
@@ -34,6 +35,16 @@ function isFact(entity: Entity): entity is Fact {
   return (entity as Fact).Natinf !== undefined;
 }
 
+const StyledSidebar = styled.div`
+  top: 0;
+  border-left: 1px solid #000000;
+  padding: 10px 15px;
+  margin: 0 10px;
+  max-width: 300px;
+  position: sticky;
+  align-self: flex-start;
+`;
+
 function Sidebar({ open, entity, onClose }: SidebarProps) {
   if (!open) return null;
   if (!entity) return null;
@@ -45,10 +56,10 @@ function Sidebar({ open, entity, onClose }: SidebarProps) {
   );
 
   return (
-    <div className="sidebar">
+    <StyledSidebar>
       <button onClick={onClose}>Fermer</button>
       {entityInfo}
-    </div>
+    </StyledSidebar>
   );
 }
 
@@ -73,6 +84,48 @@ function GeneralInfo({
     </>
   );
 }
+
+const StyledSummaryContainer = styled.section`
+  display: flex;
+`;
+
+const StyledSummary = styled.section`
+  margin-left: 90px;
+  margin-right: 77px;
+
+  p {
+    font-size: 0.8em;
+  }
+
+  h6 {
+    font-size: 1em;
+  }
+
+  hr {
+    margin: 23px 0;
+  }
+`;
+
+const StyledHeader = styled.header`
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  margin: 20px 5px;
+
+  h1 {
+    margin: inherit;
+  }
+`;
+
+const StyledHeaderTags = styled.div`
+  margin-left: auto;
+
+  p {
+    margin: 5px;
+  }
+`;
+
+const StyledBody = styled.div``;
 
 function Summary({
   summary: { entities, facts, general },
@@ -121,31 +174,18 @@ function Summary({
 
   const selectedId = preferredIds.length > 0 ? selectedEntity?.Global_Id : null;
 
+  // TODO: tutorial
+
   return (
-    <div className="summary-container">
-      <Joyride
-        continuous
-        showSkipButton
-        showProgress
-        debug
-        locale={{
-          back: "Retour",
-          close: "Fermer",
-          last: "Fin",
-          next: "Suivant",
-          open: "Ouvrir la modale",
-          skip: "Passer",
-        }}
-        steps={steps}
-      />
-      <div className="summary">
-        <div className="summary-header">
+    <StyledSummaryContainer>
+      <StyledSummary>
+        <StyledHeader>
           <h1>Procédure</h1>
-          <div className="summary-header__tags">
+          <StyledHeaderTags>
             <GeneralInfo entities={entities} general={general} facts={facts} />
-          </div>
-        </div>
-        <div className="summary-body">
+          </StyledHeaderTags>
+        </StyledHeader>
+        <StyledBody>
           <GridCard<Fact>
             Component={FactCard}
             entities={facts}
@@ -166,14 +206,14 @@ function Summary({
               <hr />
             </React.Fragment>
           ))}
-        </div>
-      </div>
+      </StyledBody>
+      </StyledSummary>
       <Sidebar
         open={selectedEntity != null}
         entity={selectedEntity}
         onClose={handleClose}
       />
-    </div>
+    </StyledSummaryContainer>
   );
 }
 

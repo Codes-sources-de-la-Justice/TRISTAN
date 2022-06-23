@@ -1,7 +1,5 @@
 import { RawAnalysis } from "./model";
-
-// @ts-ignore
-const TGCMFiles = require.context("./tgcm", true, /^(.*\.(json$))[^.]*$/im);
+import { files as tgcmIndex } from './tgcm';
 
 function baseName(x: string): string {
   const parts = x.split("/");
@@ -16,7 +14,5 @@ function processTgcmEntry([filename, json]: [string, RawAnalysis]): [
   return [baseFileName.substring(0, baseFileName.length - 5), json];
 }
 export const db = Object.fromEntries(
-  // TODO: type require.context!
-  // @ts-ignore
-  TGCMFiles.keys().map(key => [key, TGCMFiles(key)]).map(processTgcmEntry)
+  (tgcmIndex as [string, RawAnalysis][]).map(processTgcmEntry)
 );
