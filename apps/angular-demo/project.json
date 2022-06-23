@@ -4,7 +4,7 @@
   "prefix": "app",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@nrwl/angular:webpack-browser",
       "outputs": [
         "{options.outputPath}"
       ],
@@ -14,13 +14,12 @@
         "main": "apps/angular-demo/src/main.ts",
         "polyfills": "apps/angular-demo/src/polyfills.ts",
         "tsConfig": "apps/angular-demo/tsconfig.app.json",
+        "buildLibsFromSource": false,
         "assets": [
           "apps/angular-demo/src/favicon.ico",
           "apps/angular-demo/src/assets"
         ],
-        "styles": [
-          "apps/angular-demo/src/styles.css"
-        ],
+        "styles": [],
         "scripts": []
       },
       "configurations": {
@@ -57,7 +56,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nrwl/angular:webpack-server",
       "configurations": {
         "production": {
           "browserTarget": "angular-demo:build:production"
