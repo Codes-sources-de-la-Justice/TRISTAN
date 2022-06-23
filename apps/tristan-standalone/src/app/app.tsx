@@ -32,7 +32,9 @@ function Demo() {
 function Home() {
   return (
 		<main>
-			<h1 className="App">TRISTAN</h1>
+			<h1 className="App">Shell TRISTAN standalone</h1>
+			<p>Cette application est le mode standalone de TRISTAN et permet de développer TRISTAN sans les adhérences aux autres applicatifs.</p>
+			<p>TRISTAN sait lire des résultats d'analyse statiques chargés (TODO autodetect), soit utiliser un backend vers une URL déjà configuée.</p>
 		</main>
   );
 }
@@ -40,17 +42,6 @@ function Home() {
 function App() {
 	return (
 		<>
-			{/*
-			TODO: réparer.
-			<Header>
-				<HeaderNav path="/">
-					<NavItem
-						title="Liste des affaires"
-						asLink={<Link href="/" />}
-					/>
-				</HeaderNav>
-			</Header>*/}
-
 			<Route path="/">
 				<Home />
 			</Route>
