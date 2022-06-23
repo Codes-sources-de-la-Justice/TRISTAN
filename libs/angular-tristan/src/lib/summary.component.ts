@@ -40,11 +40,11 @@ export class SummaryComponent implements OnChanges, OnDestroy, AfterViewInit {
   private render() {
     if (!this.containerRef) return;
 
-    console.log(TRISTAN.SummaryContainer);
-
+    const shadowRoot = this.containerRef.nativeElement.getRootNode().host;
     const { idj } = this;
+
     ReactDOM.render(
-      React.createElement(TRISTAN.SummaryContainer, { idj }),
+      React.createElement(TRISTAN.SummaryContainer, { idj, shadowRoot }),
       this.containerRef.nativeElement
     );
   }
