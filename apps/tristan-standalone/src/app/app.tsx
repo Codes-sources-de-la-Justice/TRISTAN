@@ -6,7 +6,7 @@ import { Route } from "wouter";
 // import { Header, HeaderNav, NavItem } from "@dataesr/react-dsfr"
 //import Joyride from "react-joyride"
 
-import { DemoSchema, DemoSummary, db } from "@Codes-sources-de-la-justice/react-tristan";
+import { DemoSchema, SummaryContainer, db } from "@Codes-sources-de-la-justice/react-tristan";
 
 import 'remixicon/fonts/remixicon.css';
 
@@ -40,6 +40,8 @@ function Home() {
 }
 
 function App() {
+	const head = document.documentElement;
+
 	return (
 		<>
 			<Route path="/">
@@ -55,7 +57,7 @@ function App() {
 			</Route>
 
 			<Route path="/demo/summary/:key">
-				{params => (<DemoSummary databaseKey={params?.key} />)}
+				{params => (<SummaryContainer idj={params?.key} shadowRoot={head} />)}
 			</Route>
 		</>
 	);
