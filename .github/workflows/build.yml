@@ -32,6 +32,6 @@ jobs:
       run: nix-build -A ci
     - name: Install frontend dependencies
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
-      run: nix-shell -A ciShell --run "npm install"
+      run: nix-shell default.nix -A ciShell --run "npm install"
     - name: Build frontend code
-      run: nix-shell -A ciShell --run "npx nx build"
+      run: nix-shell default.nix -A ciShell --run "npx nx build"
