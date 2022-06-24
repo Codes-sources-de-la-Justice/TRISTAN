@@ -32,7 +32,7 @@ jobs:
       if: steps.cache-nodemodules.outputs.cache-hit != 'true'
       run: nix-shell default.nix -A ciShell --run "npm install"
     - name: Build TRISTAN standalone frontend bundles
-      run: nix-shell default.nix -A ciShell --run "npx nx build tristan-standalone"
+      run: nix-shell default.nix -A ciShell --run "APP_BASE_URL=TRISTAN npx nx build tristan-standalone"
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4.3.3
       with:
