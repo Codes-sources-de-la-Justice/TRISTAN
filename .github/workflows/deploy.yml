@@ -35,6 +35,6 @@ jobs:
       run: nix-shell default.nix -A ciShell --run "npx nx build tristan-standalone"
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4.3.3
-        with:
-          branch: gh-pages
-          folder: dist/apps/tristan-standalone
+      with:
+        branch: gh-pages
+        folder: dist/apps/tristan-standalone
