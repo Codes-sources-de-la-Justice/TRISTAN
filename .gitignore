@@ -12,3 +12,4 @@ state/
 coverage/
 .angular
 dist/
+result*
