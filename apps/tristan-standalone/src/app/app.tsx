@@ -1,7 +1,7 @@
 import "./app.module.css";
 
 import React, { Fragment } from "react";
-import { Route } from "wouter";
+import { Route, Router } from "wouter";
 
 // import { Header, HeaderNav, NavItem } from "@dataesr/react-dsfr"
 //import Joyride from "react-joyride"
@@ -41,9 +41,10 @@ function Home() {
 
 function App() {
 	const head = document.documentElement;
+	const basePath = document.baseURI.split(window.location.origin)[1] || '/';
 
 	return (
-		<>
+		<Router base={basePath}>
 			<Route path="/">
 				<Home />
 			</Route>
@@ -59,7 +60,7 @@ function App() {
 			<Route path="/demo/summary/:key">
 				{params => (<SummaryContainer idj={params?.key} shadowRoot={head} />)}
 			</Route>
-		</>
+		</Router>
 	);
 }
 
