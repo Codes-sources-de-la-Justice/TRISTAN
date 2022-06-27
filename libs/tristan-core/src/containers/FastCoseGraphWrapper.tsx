@@ -2,7 +2,7 @@
 import fcose from 'cytoscape-fcose'
 import cytoscape from 'cytoscape'
 
-import { GraphWrapper } from '@Codes-sources-de-la-justice/cytoscape-react';
+import { GraphWrapper } from '@codes-sources-de-la-justice/cytoscape-react';
 import {LayoutConstraints} from '../static/model';
 
 cytoscape.use(fcose);

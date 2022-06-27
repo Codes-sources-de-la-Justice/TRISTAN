@@ -9,7 +9,7 @@ import {
   ViewChild,
   ElementRef,
 } from "@angular/core";
-import * as TRISTAN from "@Codes-sources-de-la-justice/react-tristan";
+import * as TRISTAN from "@codes-sources-de-la-justice/react-tristan";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 

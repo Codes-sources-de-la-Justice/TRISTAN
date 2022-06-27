@@ -11,7 +11,8 @@
           "test",
           "build-angular",
           "build-no-ngcc",
-          "test:a11y"
+          "test:a11y",
+          "build-storybook"
         ]
       }
     }

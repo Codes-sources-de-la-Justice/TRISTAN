@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import React, { useEffect, useState, MouseEvent, CSSProperties, MouseEventHandler } from "react";
-import { NodeWrapper, EdgeWrapper } from '@Codes-sources-de-la-justice/cytoscape-react';
+import { NodeWrapper, EdgeWrapper } from '@codes-sources-de-la-justice/cytoscape-react';
 import Cytoscape from 'cytoscape';
 
 import FastCoseGraphWrapper from "./FastCoseGraphWrapper";
