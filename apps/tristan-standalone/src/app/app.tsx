@@ -6,7 +6,7 @@ import { Route, Router } from "wouter";
 // import { Header, HeaderNav, NavItem } from "@dataesr/react-dsfr"
 //import Joyride from "react-joyride"
 
-import { DemoSchema, SummaryContainer, db } from "@Codes-sources-de-la-justice/react-tristan";
+import { DemoSchema, SummaryContainer, db } from "@codes-sources-de-la-justice/react-tristan";
 
 import 'remixicon/fonts/remixicon.css';
 
@@ -44,7 +44,7 @@ function App() {
 	const basePath = document.baseURI.split(window.location.origin)[1] || '/';
 
 	return (
-		<Router base={basePath}>
+		<Router>
 			<Route path="/">
 				<Home />
 			</Route>
