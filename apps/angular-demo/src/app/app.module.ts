@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { AngularTristanModule } from '@Codes-sources-de-la-justice/angular-tristan';
+import { AngularTristanModule } from '@codes-sources-de-la-justice/angular-tristan';
 
 @NgModule({
   declarations: [
