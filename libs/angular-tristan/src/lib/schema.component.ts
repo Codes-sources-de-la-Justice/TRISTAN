@@ -14,15 +14,15 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { defaultTheme as theme } from './default-theme'
 
-const containerElementName = "ReactTristanSummary";
+const containerElementName = "ReactTristanSchema";
 
 @Component({
-  selector: "app-react-tristan-summary",
+  selector: "app-react-tristan-schema",
   template: `<div #${containerElementName}></div>`,
   styles: [``],
   encapsulation: ViewEncapsulation.None,
 })
-export class SummaryComponent implements OnChanges, OnDestroy, AfterViewInit {
+export class SchemaComponent implements OnChanges, OnDestroy, AfterViewInit {
   @ViewChild(containerElementName, { static: false }) containerRef!: ElementRef;
   @Input() public idj: string | undefined;
 
@@ -45,7 +45,7 @@ export class SummaryComponent implements OnChanges, OnDestroy, AfterViewInit {
     const { idj } = this;
 
     ReactDOM.render(
-      React.createElement(TRISTAN.SummaryContainer, { idj, shadowRoot, theme }),
+      React.createElement(TRISTAN.SchemaContainer, { idj, shadowRoot, theme }),
       this.containerRef.nativeElement
     );
   }
