@@ -1,13 +1,20 @@
-import React, {ReactNode, useEffect, useState} from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import Summary from "./Summary";
 import type { RawAnalysis } from "../static/model";
 import { toBackendPayload, toGraph } from "../static";
 import { db } from "../static/db";
-import { Layout } from '../components/Layout';
-import { DefaultTheme } from 'styled-components';
+import { Layout } from "../components/Layout";
+import { DefaultTheme } from "styled-components";
 
-
-export function SummaryContainer({ idj, shadowRoot, theme }: { idj?: string, shadowRoot: HTMLElement, theme: DefaultTheme }) {
+export function SummaryContainer({
+  idj,
+  shadowRoot,
+  theme,
+}: {
+  idj?: string;
+  shadowRoot: HTMLElement;
+  theme: DefaultTheme;
+}) {
   if (!idj) return null; // TODO: spinner?
 
   const backendResponse = db[idj];
@@ -16,7 +23,7 @@ export function SummaryContainer({ idj, shadowRoot, theme }: { idj?: string, sha
   const [awaitedResponse, setResponse] = useState<null | RawAnalysis>(null);
 
   useEffect(() => {
-    Promise.resolve(backendResponse).then(resp => {
+    Promise.resolve(backendResponse).then((resp) => {
       setResponse(resp);
     });
   }, [idj]);
@@ -30,19 +37,19 @@ export function SummaryContainer({ idj, shadowRoot, theme }: { idj?: string, sha
   // TODO: add witnesses, others.
   return (
     <Layout target={shadowRoot} theme={theme}>
-     <Summary
-    elements={elements}
-    summary={{
-      entities: {
-        victims,
-        indictees,
-        witnesses,
-        others,
-      },
-      facts: facts,
-      general: general,
-    }}
-  />
- </Layout>
+      <Summary
+        elements={elements}
+        summary={{
+          entities: {
+            victims,
+            indictees,
+            witnesses,
+            others,
+          },
+          facts: facts,
+          general: general,
+        }}
+      />
+    </Layout>
   );
 }
