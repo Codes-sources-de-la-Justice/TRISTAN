@@ -3,37 +3,11 @@ import Summary from "./Summary";
 import type { RawAnalysis } from "../static/model";
 import { toBackendPayload, toGraph } from "../static";
 import { db } from "../static/db";
-import { StyleSheetManager } from "styled-components";
+import { Layout } from '../components/Layout';
+import { DefaultTheme } from 'styled-components';
 
-interface Error {
-  stack?: string;
-}
 
-class ErrorBoundary extends React.Component<{ children: ReactNode }, { hasError: boolean }> {
-  override state = {
-    hasError: false,
-  };
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true };
-  }
-
-  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Error", error, errorInfo);
-  }
-
-  override render() {
-    if (this.state.hasError) {
-      return (
-        <h1>Une erreur fatale est survenue, veuillez recharger TRISTAN.</h1>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
-export function SummaryContainer({ idj, shadowRoot }: { idj?: string, shadowRoot: HTMLElement }) {
+export function SummaryContainer({ idj, shadowRoot, theme }: { idj?: string, shadowRoot: HTMLElement, theme: DefaultTheme }) {
   if (!idj) return null; // TODO: spinner?
 
   const backendResponse = db[idj];
@@ -55,22 +29,20 @@ export function SummaryContainer({ idj, shadowRoot }: { idj?: string, shadowRoot
 
   // TODO: add witnesses, others.
   return (
-    <ErrorBoundary>
-      <StyleSheetManager target={shadowRoot}>
-       <Summary
-      elements={elements}
-      summary={{
-        entities: {
-          victims,
-          indictees,
-          witnesses,
-          others,
-        },
-        facts: facts,
-        general: general,
-      }}
-    />
-     </StyleSheetManager>
-    </ErrorBoundary>
+    <Layout target={shadowRoot} theme={theme}>
+     <Summary
+    elements={elements}
+    summary={{
+      entities: {
+        victims,
+        indictees,
+        witnesses,
+        others,
+      },
+      facts: facts,
+      general: general,
+    }}
+  />
+ </Layout>
   );
 }

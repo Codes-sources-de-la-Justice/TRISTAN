@@ -1,5 +1,3 @@
 export * from './containers/SummaryContainer';
+export * from './containers/SchemaContainer';
 export * from './static/db';
-
-export * from './components/DemoSchema';
-export * from './components/DemoSummary';

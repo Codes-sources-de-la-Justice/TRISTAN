@@ -10,7 +10,6 @@ import { GenericNodeType } from '../static';
 
 import { match } from 'ts-pattern'
 
-//import './Schema.css';
 import {FactNode, PersonNode} from "../components/nodes";
 
 function wordToTitleCase(str: string) {
@@ -185,30 +184,28 @@ class Schema extends React.Component<SchemaProps, SchemaState> {
 		const { layoutConstraints, elements, onSelect, onUnselect, layoutParameters, ghostIds, selectedIds } = this.props
 
 		return (
-		 <div ref={this.wrapperRef}>
-			 {/* @ts-ignore */}
-				<FastCoseGraphWrapper
-					layoutConstraints={layoutConstraints}
-					layoutParameters={layoutParameters}>
-					{elements.map(element => {
-						if (isGenericNode(element)) {
-							return this.renderNode(
-								element.data,
-								onSelect,
-								onUnselect,
-								(ghostIds || []).includes(element.data.id),
-								(selectedIds || []).includes(element.data.id)
-							);
-						} else if (isEdge(element)) {
-							return this.renderEdge(element.data,
-								(ghostIds || []).includes(element.data.source) ||
-								(ghostIds || []).includes(element.data.target));
-						} else {
-							throw new Error('Unreachable code');
-						}
-					})}
-				</FastCoseGraphWrapper>
-			</div>
+		 <FastCoseGraphWrapper
+ 				containerProps={{style: { height: "100%" }}}
+				layoutConstraints={layoutConstraints}
+				layoutParameters={layoutParameters}>
+				{elements.map(element => {
+					if (isGenericNode(element)) {
+						return this.renderNode(
+							element.data,
+							onSelect,
+							onUnselect,
+							(ghostIds || []).includes(element.data.id),
+							(selectedIds || []).includes(element.data.id)
+						);
+					} else if (isEdge(element)) {
+						return this.renderEdge(element.data,
+							(ghostIds || []).includes(element.data.source) ||
+							(ghostIds || []).includes(element.data.target));
+					} else {
+						throw new Error('Unreachable code');
+					}
+				})}
+			</FastCoseGraphWrapper>
 		);
 	}
 }

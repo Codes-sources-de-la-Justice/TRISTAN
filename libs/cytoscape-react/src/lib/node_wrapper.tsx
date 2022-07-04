@@ -5,10 +5,11 @@ type Props = {
   cy: Cytoscape.Core;
   id: string;
   children: ReactNode;
+  onAdded: (id: string) => void;
 };
 
 function initializeCytoscape(domNode: RefObject<HTMLElement>, props: Props) {
-  const { cy, id } = props;
+  const { cy, id, onAdded } = props;
   if (cy && cy.getElementById(id).length === 0) {
     cy.add({
       data: {
@@ -16,6 +17,8 @@ function initializeCytoscape(domNode: RefObject<HTMLElement>, props: Props) {
         dom: domNode.current,
       },
     });
+
+    onAdded(id);
   }
 }
 

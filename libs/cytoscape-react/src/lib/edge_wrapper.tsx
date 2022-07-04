@@ -14,13 +14,14 @@ type Props = {
   source: string;
   target: string;
   children: ReactNode;
+  onAdded: (id: string) => void;
 };
 
 function initializeCytoscape(
   props: Props,
   setMissing: Dispatch<SetStateAction<number>>
 ) {
-  const { id, cy, source, target } = props;
+  const { id, cy, source, target, onAdded } = props;
 
   const remaining =
     2 - cy.getElementById(source).length - cy.getElementById(target).length;
@@ -46,6 +47,7 @@ function initializeCytoscape(
   } else {
     if (cy.getElementById(id).length === 0) {
       cy.add({ group: "edges", data: props });
+      onAdded(id);
     }
   }
 

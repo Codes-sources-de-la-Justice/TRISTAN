@@ -2,11 +2,12 @@ import "./app.module.css";
 
 import React, { Fragment } from "react";
 import { Route, Router } from "wouter";
+import { DefaultTheme } from 'styled-components';
 
 // import { Header, HeaderNav, NavItem } from "@dataesr/react-dsfr"
 //import Joyride from "react-joyride"
 
-import { DemoSchema, SummaryContainer, db } from "@codes-sources-de-la-justice/react-tristan";
+import { SchemaContainer, SummaryContainer, db } from "@codes-sources-de-la-justice/react-tristan";
 
 import 'remixicon/fonts/remixicon.css';
 
@@ -39,6 +40,10 @@ function Home() {
   );
 }
 
+const standaloneTheme: DefaultTheme = {
+ 	standalone: true
+};
+
 function App() {
 	const head = document.documentElement;
 	const basePath = document.baseURI.split(window.location.origin)[1] || '/';
@@ -54,11 +59,11 @@ function App() {
 			</Route>
 
 			<Route path="/demo/schema/:key">
-				{params => (<DemoSchema databaseKey={params.key} />)}
+				{params => (<SchemaContainer idj={params?.key} shadowRoot={head} theme={standaloneTheme} />)}
 			</Route>
 
 			<Route path="/demo/summary/:key">
-				{params => (<SummaryContainer idj={params?.key} shadowRoot={head} />)}
+				{params => (<SummaryContainer idj={params?.key} shadowRoot={head} theme={standaloneTheme} />)}
 			</Route>
 		</Router>
 	);

@@ -94,12 +94,8 @@ export default class FastCoseGraphWrapper extends GraphWrapper {
 			}
 		}
 
-    graphElementDidMount (el_component) {
+    graphElementAdded (id: string) {
         this.layout();
-		}
-
-    graphElementDidUpdate (el_component) {
-        //this.layout();
 		}
 
 		render() { return super.render(); }
