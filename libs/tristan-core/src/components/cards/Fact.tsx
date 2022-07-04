@@ -54,7 +54,7 @@ export function FactInfo({ fact, level = 1 }: FactInfoProps) {
       {level >= 2 && (
         <>
           <p>
-            Pour s'être trouvé à {fact.Libelle_Magistrat.Lieux[0].Lieu},{" "}
+            Pour s'être trouvé à {fact.Libelle_Magistrat.Lieux[0]?.Lieu},{" "}
             {fact.Libelle_Magistrat.Explication}{" "}
           </p>
           <p>
