@@ -10,6 +10,8 @@ declare module 'styled-components' {
   }
 }
 
+export type { DefaultTheme };
+
 const GlobalStyle = createGlobalStyle`
   ${props => props.theme.standalone && 
   (`
