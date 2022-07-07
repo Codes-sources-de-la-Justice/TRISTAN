@@ -1,6 +1,6 @@
 {
   "name": "@codes-sources-de-la-justice/react-tristan",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "peerDependencies": {
     "react": "^17",
     "react-dom": "^17",
